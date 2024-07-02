@@ -28,12 +28,12 @@ const getSelf = async () => {
 
 const LoginPage = () => {
     const { setUser } = useAuthStore();
-    const { data: selfData, refetch } = useQuery({
+    const { refetch } = useQuery({
         queryKey: ['self'],
         queryFn: getSelf,
         enabled: false,
     });
-    const { mutate, isPending, isError, error } = useMutation({
+    const { mutate, isPending, isError } = useMutation({
         mutationKey: ['login'],
         mutationFn: loginUser,
         onSuccess: async () => {
@@ -42,7 +42,6 @@ const LoginPage = () => {
         },
     });
 
-    console.log(import.meta.env.VITE_BACKEN_API_URL);
     return (
         <>
             <Layout
