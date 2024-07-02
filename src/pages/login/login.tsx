@@ -1,17 +1,37 @@
-import { Button, Card, Checkbox, Flex, Form, Input, Layout, Space } from 'antd';
+import {
+    Alert,
+    Button,
+    Card,
+    Checkbox,
+    Flex,
+    Form,
+    Input,
+    Layout,
+    Space,
+} from 'antd';
 import { LockFilled, UserOutlined, LockOutlined } from '@ant-design/icons';
 import Icon from '../../components/icon/Icon';
+import { useMutation } from '@tanstack/react-query';
+import { login } from '../../hrrp/api';
+import { Credentials } from '../../types';
+
+const loginUser = async (credential: Credentials) => {
+    const data = await login(credential);
+    return data;
+};
 
 const LoginPage = () => {
+    const { mutate, isPending, isError, error } = useMutation({
+        mutationKey: ['login'],
+        mutationFn: loginUser,
+        onSuccess: () => {
+            console.log('Login successfully');
+        },
+    });
+
+    console.log(import.meta.env.VITE_BACKEN_API_URL);
     return (
         <>
-            {/* <h1>Sign in</h1>
-            <input type="text" placeholder="Username" />
-            <input type="password" placeholder="Password" />
-            <button>Log in</button>
-            <label htmlFor="remember-me">Remember me </label>
-            <input type="checkbox" id="remember-me" />
-            <a href="#">Forget password</a> */}
             <Layout
                 style={{
                     height: '100vh',
@@ -41,9 +61,23 @@ const LoginPage = () => {
                                 Sign in
                             </Space>
                         }>
-                        <Form autoComplete="off">
+                        <Form
+                            autoComplete="off"
+                            onFinish={(value) =>
+                                mutate({
+                                    email: value.username,
+                                    password: value.password,
+                                })
+                            }>
+                            {isError && (
+                                <Alert
+                                    style={{ margin: '1rem 0 ' }}
+                                    type="error"
+                                    message={`Error`}
+                                />
+                            )}
                             <Form.Item
-                                name={'Username'}
+                                name={'username'}
                                 rules={[
                                     {
                                         required: true,
@@ -60,7 +94,7 @@ const LoginPage = () => {
                                 />
                             </Form.Item>
                             <Form.Item
-                                name={'Password'}
+                                name={'password'}
                                 rules={[
                                     {
                                         required: true,
@@ -86,7 +120,9 @@ const LoginPage = () => {
                                 <Button
                                     type="primary"
                                     htmlType="submit"
-                                    style={{ width: '100%' }}>
+                                    style={{ width: '100%' }}
+                                    disabled={isPending}
+                                    loading={isPending}>
                                     Log in
                                 </Button>
                             </Form.Item>
