@@ -10,12 +10,12 @@ import {
     Space,
 } from 'antd';
 import { LockFilled, UserOutlined, LockOutlined } from '@ant-design/icons';
-import Icon from '../../components/icon/Icon';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Credentials } from '../../types';
 import { login, logout, self } from '../../http/api';
 import { useAuthStore } from '../../store';
 import { usePermission } from '../../hooks/usePermission';
+import Logo from '../../components/icon/Logo';
 
 const loginUser = async (credential: Credentials) => {
     const data = await login(credential);
@@ -73,7 +73,7 @@ const LoginPage = () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                        <Icon />
+                        <Logo/>
                     </Layout.Content>
                     <Card
                         bordered={false}

@@ -3,8 +3,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/login/login';
 import Dashboard from './Layouts/Dashboard';
 import UnAuth from './Layouts/UnAuth';
-import Categories from './pages/Categories';
 import Root from './Layouts/Root';
+import Users from './pages/users/Users';
 
 export const router = createBrowserRouter([
     {
@@ -20,8 +20,8 @@ export const router = createBrowserRouter([
                         element: <HomePage />,
                     },
                     {
-                        path: 'categories',
-                        element: <Categories />,
+                        path: '/users',
+                        element: <Users />,
                     },
                 ],
             },

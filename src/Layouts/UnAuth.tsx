@@ -8,7 +8,6 @@ const UnAuth = () => {
     }
     return (
         <div>
-            <h1>No Auth Component</h1>
             <Outlet />
         </div>
     );
