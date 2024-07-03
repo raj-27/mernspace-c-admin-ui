@@ -16,6 +16,7 @@ import { login, logout, self } from '../../http/api';
 import { useAuthStore } from '../../store';
 import { usePermission } from '../../hooks/usePermission';
 import Logo from '../../components/icon/Logo';
+import toast from 'react-hot-toast';
 
 const loginUser = async (credential: Credentials) => {
     const data = await login(credential);
@@ -55,6 +56,7 @@ const LoginPage = () => {
                 return;
             }
             setUser(selfData.data);
+            toast.success('Successfully login!');
         },
     });
 
@@ -73,7 +75,7 @@ const LoginPage = () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                        <Logo/>
+                        <Logo />
                     </Layout.Content>
                     <Card
                         bordered={false}

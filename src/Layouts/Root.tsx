@@ -4,6 +4,7 @@ import { self } from '../http/api';
 import { useAuthStore } from '../store';
 import { useEffect } from 'react';
 import { AxiosError } from 'axios';
+import { Toaster } from 'react-hot-toast';
 
 const getSelf = async () => {
     const { data } = await self();
@@ -37,6 +38,7 @@ const Root = () => {
     return (
         <>
             <Outlet />
+            <Toaster />
         </>
     );
 };
