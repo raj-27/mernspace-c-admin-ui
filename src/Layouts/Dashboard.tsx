@@ -9,6 +9,7 @@ import {
     Layout,
     Menu,
     Space,
+    Tag,
     theme,
 } from 'antd';
 import { useState } from 'react';
@@ -98,12 +99,11 @@ const Dashboard = () => {
                         }}>
                         <Flex
                             gap="middle"
-                            align="start"
+                            align="center"
                             justify="space-between">
-                            <Badge
-                                text={user?.tenant?.name ?? 'Global'}
-                                status="success"
-                            />
+                            <Tag bordered={false} color="orange">
+                                {user?.tenant?.name ?? 'You are admin'}
+                            </Tag>
                             <Space size={16}>
                                 <Badge dot>
                                     <BellOutlined />
@@ -130,7 +130,7 @@ const Dashboard = () => {
                             </Space>
                         </Flex>
                     </Header>
-                    <Content style={{ margin: '0 16px' }}>
+                    <Content style={{ margin: 24 }}>
                         <Outlet />
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
