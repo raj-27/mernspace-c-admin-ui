@@ -1,8 +1,8 @@
 import { Breadcrumb, Space, Table, Tag } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { getUsers } from '../../http/api';
 import { useQuery } from '@tanstack/react-query';
-import { Tenant } from '../../store';
+import { Tenant, useAuthStore } from '../../store';
 import { User } from '../../types';
 
 const columns = [
@@ -47,6 +47,10 @@ const columns = [
 ];
 
 const Users = () => {
+    const { user } = useAuthStore();
+    if (user?.role !== 'admin') {
+        return <Navigate to={'/'} replace={true} />;
+    }
     const { data: users, isLoading } = useQuery({
         queryKey: ['users'],
         queryFn: getUsers,

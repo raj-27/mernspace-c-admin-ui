@@ -24,33 +24,42 @@ import { logout } from '../http/api';
 import toast from 'react-hot-toast';
 const { Sider, Content, Header, Footer } = Layout;
 
-const items = [
-    {
-        key: '/',
-        icon: <Icon component={Home} />,
-        label: <NavLink to="/">Home</NavLink>,
-    },
-    {
-        key: '/users',
-        icon: <Icon component={UserIcon} />,
-        label: <NavLink to="/users">Users</NavLink>,
-    },
-    {
-        key: '/restaurants',
-        icon: <Icon component={foodIcon} />,
-        label: <NavLink to="/restaurants">Restaurants</NavLink>,
-    },
-    {
-        key: '/products',
-        icon: <Icon component={BasketIcon} />,
-        label: <NavLink to="/products">Products</NavLink>,
-    },
-    {
-        key: '/promos',
-        icon: <Icon component={GiftIcon} />,
-        label: <NavLink to="/promos">Promos</NavLink>,
-    },
-];
+function getItems(role: string) {
+    const baseItem = [
+        {
+            key: '/',
+            icon: <Icon component={Home} />,
+            label: <NavLink to="/">Home</NavLink>,
+        },
+
+        {
+            key: '/restaurants',
+            icon: <Icon component={foodIcon} />,
+            label: <NavLink to="/restaurants">Restaurants</NavLink>,
+        },
+        {
+            key: '/products',
+            icon: <Icon component={BasketIcon} />,
+            label: <NavLink to="/products">Products</NavLink>,
+        },
+        {
+            key: '/promos',
+            icon: <Icon component={GiftIcon} />,
+            label: <NavLink to="/promos">Promos</NavLink>,
+        },
+    ];
+    if (role === 'admin') {
+        return [
+            ...baseItem,
+            {
+                key: '/users',
+                icon: <Icon component={UserIcon} />,
+                label: <NavLink to="/users">Users</NavLink>,
+            },
+        ];
+    }
+    return baseItem;
+}
 
 const Dashboard = () => {
     const { logout: logoutFromStore } = useAuthStore();
@@ -73,6 +82,7 @@ const Dashboard = () => {
     if (user === null) {
         return <Navigate to="/auth/login" replace={true} />;
     }
+    const items = getItems(user?.role);
     return (
         <div>
             <Layout style={{ minHeight: '100vh' }}>
