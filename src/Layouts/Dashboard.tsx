@@ -100,7 +100,10 @@ const Dashboard = () => {
                             gap="middle"
                             align="start"
                             justify="space-between">
-                            <Badge text="Hippies" status="success" />
+                            <Badge
+                                text={user?.tenant?.name ?? 'Global'}
+                                status="success"
+                            />
                             <Space size={16}>
                                 <Badge dot>
                                     <BellOutlined />
