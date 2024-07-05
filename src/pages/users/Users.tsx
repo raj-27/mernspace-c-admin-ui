@@ -72,8 +72,12 @@ const Users = () => {
                     { title: 'Users' },
                 ]}
             />
-            <UserFilter />
-            <Table columns={columns} dataSource={users?.data} />
+            <UserFilter
+                onFilterChange={(filterName, filterValue) => {
+                    console.log({ filterName, filterValue });
+                }}
+            />
+            <Table columns={columns} dataSource={users?.data} rowKey={'id'} />
         </Space>
     );
 };
