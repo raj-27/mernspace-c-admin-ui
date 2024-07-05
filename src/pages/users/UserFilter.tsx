@@ -1,10 +1,12 @@
-import { Button, Card, Flex, Input, Select, Space } from 'antd';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Card, Flex, Input, Select, Space } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import React from 'react';
 
 type UsersFilterProps = {
     onFilterChange: (filterName: string, filterValue: string) => void;
+    children: React.ReactNode;
 };
-const UserFilter = ({ onFilterChange }: UsersFilterProps) => {
+const UserFilter = ({ onFilterChange, children }: UsersFilterProps) => {
     return (
         <Card bordered={false}>
             <Flex gap={10} justify="space-between" align="center">
@@ -38,9 +40,7 @@ const UserFilter = ({ onFilterChange }: UsersFilterProps) => {
                         <Select.Option value="active">Active</Select.Option>
                     </Select>
                 </Space>
-                <Button type="primary" icon={<PlusOutlined />}>
-                    Create User
-                </Button>
+                {children}
             </Flex>
         </Card>
     );
