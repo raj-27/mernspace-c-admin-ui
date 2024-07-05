@@ -49,6 +49,13 @@ function getItems(role: string) {
         },
     ];
     if (role === 'admin') {
+        const menus = [...baseItem];
+        menus.splice(1, 0, {
+            key: '/users',
+            icon: <Icon component={UserIcon} />,
+            label: <NavLink to="/users">Users</NavLink>,
+        });
+        return menus;
         return [
             ...baseItem,
             {

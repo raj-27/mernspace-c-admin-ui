@@ -4,6 +4,7 @@ import { getUsers } from '../../http/api';
 import { useQuery } from '@tanstack/react-query';
 import { Tenant, useAuthStore } from '../../store';
 import { User } from '../../types';
+import UserFilter from './UserFilter';
 
 const columns = [
     {
@@ -71,6 +72,7 @@ const Users = () => {
                     { title: 'Users' },
                 ]}
             />
+            <UserFilter />
             <Table columns={columns} dataSource={users?.data} />
         </Space>
     );
