@@ -9,10 +9,9 @@ import {
     theme,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-
 import { Link, Navigate } from 'react-router-dom';
-import { getUsers } from '../../http/api';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createUser, getUsers } from '../../http/api';
 import { Tenant, useAuthStore } from '../../store';
 import { User } from '../../types';
 import UserFilter from './UserFilter';
@@ -61,6 +60,8 @@ const columns = [
 ];
 
 const Users = () => {
+    const [form] = Form.useForm();
+    const queryClient = useQueryClient();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { user } = useAuthStore();
     const {
@@ -74,9 +75,25 @@ const Users = () => {
         queryFn: getUsers,
     });
 
+    const { mutate: userMutate } = useMutation({
+        mutationKey: ['user'],
+        mutationFn: createUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            setDrawerOpen(false);
+            return;
+        },
+    });
+
     if (isLoading) {
         return <h4>Loading...</h4>;
     }
+
+    const handleFormSubmit = async () => {
+        await form.validateFields();
+        console.log(form.getFieldsValue());
+        userMutate(form.getFieldsValue());
+    };
 
     console.log(users);
     return (
@@ -110,13 +127,19 @@ const Users = () => {
                 destroyOnClose={true}
                 extra={
                     <Space>
-                        <Button onClick={() => setDrawerOpen(false)}>
+                        <Button
+                            onClick={() => {
+                                setDrawerOpen(false);
+                                form.resetFields();
+                            }}>
                             Cancel
                         </Button>
-                        <Button type="primary">Submit</Button>
+                        <Button type="primary" onClick={handleFormSubmit}>
+                            Submit
+                        </Button>
                     </Space>
                 }>
-                <Form layout="vertical">
+                <Form layout="vertical" form={form}>
                     <UserForm />
                 </Form>
             </Drawer>

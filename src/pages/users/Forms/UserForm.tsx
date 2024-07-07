@@ -17,7 +17,7 @@ const UserForm = () => {
                             <Col span={12}>
                                 <Form.Item
                                     label="First name"
-                                    name="firstname"
+                                    name="firstName"
                                     rules={[
                                         {
                                             required: true,
@@ -30,7 +30,7 @@ const UserForm = () => {
                             <Col span={12}>
                                 <Form.Item
                                     label="Last name"
-                                    name="lastname"
+                                    name="lastName"
                                     rules={[
                                         {
                                             required: true,
@@ -108,7 +108,7 @@ const UserForm = () => {
                             <Col span={12}>
                                 <Form.Item
                                     label="Tenant Id"
-                                    name="tenantid"
+                                    name="tenantId"
                                     rules={[
                                         {
                                             required: true,
@@ -124,7 +124,7 @@ const UserForm = () => {
                                         {tenants?.data?.map(
                                             (tenant: Tenant) => (
                                                 <Select.Option
-                                                    value={tenant.name}>
+                                                    value={tenant.id}>
                                                     {tenant.id}.{tenant.name}
                                                 </Select.Option>
                                             )
