@@ -10,3 +10,8 @@ export interface User {
     email: string;
     role: string;
 }
+
+export type UsersFilterProps = {
+    onFilterChange: (filterName: string, filterValue: string) => void;
+    children: React.ReactNode;
+};

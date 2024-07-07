@@ -1,11 +1,7 @@
 import { Card, Flex, Input, Select, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import React from 'react';
+import { UsersFilterProps } from '../../types';
 
-type UsersFilterProps = {
-    onFilterChange: (filterName: string, filterValue: string) => void;
-    children: React.ReactNode;
-};
 const UserFilter = ({ onFilterChange, children }: UsersFilterProps) => {
     return (
         <Card bordered={false}>
