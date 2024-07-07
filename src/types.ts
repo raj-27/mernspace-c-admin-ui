@@ -15,3 +15,9 @@ export type UsersFilterProps = {
     onFilterChange: (filterName: string, filterValue: string) => void;
     children: React.ReactNode;
 };
+
+export interface Tenant {
+    id: number;
+    name: string;
+    address: string;
+}
