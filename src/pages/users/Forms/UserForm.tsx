@@ -4,7 +4,7 @@ import { getTenants } from '../../../http/api';
 import { Tenant } from '../../../types';
 
 const UserForm = () => {
-    const { data: tenants, isLoading } = useQuery({
+    const { data: tenants } = useQuery({
         queryKey: ['tenants'],
         queryFn: getTenants,
     });
@@ -15,17 +15,45 @@ const UserForm = () => {
                     <Card title="Basic info">
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="First name" name="firstname">
+                                <Form.Item
+                                    label="First name"
+                                    name="firstname"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Firstname is required',
+                                        },
+                                    ]}>
                                     <Input type="text" />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Last name" name="lastname">
+                                <Form.Item
+                                    label="Last name"
+                                    name="lastname"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Lastname is required',
+                                        },
+                                    ]}>
                                     <Input size="middle" type="text" />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Email" name="email">
+                                <Form.Item
+                                    label="Email"
+                                    name="email"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Email is required',
+                                        },
+                                        {
+                                            type: 'email',
+                                            message: 'Email is not valid',
+                                        },
+                                    ]}>
                                     <Input size="middle" type="text" />
                                 </Form.Item>
                             </Col>
@@ -34,7 +62,15 @@ const UserForm = () => {
                     <Card title="Security info">
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Password" name="password">
+                                <Form.Item
+                                    label="Password"
+                                    name="password"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Password is requirred',
+                                        },
+                                    ]}>
                                     <Input size="middle" type="password" />
                                 </Form.Item>
                             </Col>
@@ -43,7 +79,15 @@ const UserForm = () => {
                     <Card title="Role">
                         <Row gutter={20}>
                             <Col span={12}>
-                                <Form.Item label="Role" name="role">
+                                <Form.Item
+                                    label="Role"
+                                    name="role"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Roles are required',
+                                        },
+                                    ]}>
                                     <Select
                                         style={{ width: '100%' }}
                                         placeholder="Role"
@@ -62,7 +106,15 @@ const UserForm = () => {
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Tenant Id" name="tenantid">
+                                <Form.Item
+                                    label="Tenant Id"
+                                    name="tenantid"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Tenant id is required',
+                                        },
+                                    ]}>
                                     <Select
                                         size="large"
                                         style={{ width: '100%' }}
