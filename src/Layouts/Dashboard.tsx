@@ -56,14 +56,6 @@ function getItems(role: string) {
             label: <NavLink to="/users">Users</NavLink>,
         });
         return menus;
-        return [
-            ...baseItem,
-            {
-                key: '/users',
-                icon: <Icon component={UserIcon} />,
-                label: <NavLink to="/users">Users</NavLink>,
-            },
-        ];
     }
     return baseItem;
 }
