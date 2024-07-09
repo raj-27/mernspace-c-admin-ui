@@ -49,19 +49,23 @@ const columns = [
             return <Tag color="orange">{text}</Tag>;
         },
     },
-    {
-        title: 'Tenant',
-        dataIndex: 'tenant',
-        ley: 'tenant',
-        render: (tenant: Tenant) => {
-            return <div>{tenant?.name ?? 'null'}</div>;
-        },
-    },
+    // {
+    //     title: 'Tenant',
+    //     dataIndex: 'tenant',
+    //     ley: 'tenant',
+    //     render: (tenant: Tenant) => {
+    //         return <div>{tenant?.name ?? 'null'}</div>;
+    //     },
+    // },
 ];
 
 const Users = () => {
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
+    const [queryParams, setQueryParams] = useState({
+        perPage: 5,
+        currentPage: 1,
+    });
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { user } = useAuthStore();
     const {
@@ -71,9 +75,16 @@ const Users = () => {
         return <Navigate to={'/'} replace={true} />;
     }
     const { data: users, isLoading } = useQuery({
-        queryKey: ['users'],
-        queryFn: getUsers,
+        queryKey: ['users', queryParams],
+        queryFn: () => {
+            const queryString = new URLSearchParams(
+                queryParams as unknown as Record<string, string>
+            ).toString();
+            return getUsers(queryString).then((res) => res.data);
+        },
     });
+
+    console.log(users);
 
     const { mutate: userMutate } = useMutation({
         mutationKey: ['user'],
@@ -91,11 +102,9 @@ const Users = () => {
 
     const handleFormSubmit = async () => {
         await form.validateFields();
-        console.log(form.getFieldsValue());
         userMutate(form.getFieldsValue());
     };
 
-    console.log(users);
     return (
         <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
             <Breadcrumb
@@ -117,7 +126,24 @@ const Users = () => {
                     Create User
                 </Button>
             </UserFilter>
-            <Table columns={columns} dataSource={users?.data} rowKey={'id'} />
+            <Table
+                columns={columns}
+                dataSource={users?.data}
+                rowKey={'id'}
+                pagination={{
+                    total: users?.count,
+                    pageSize: queryParams.perPage,
+                    current: queryParams.currentPage,
+                    onChange: (page) => {
+                        setQueryParams((prev) => {
+                            return {
+                                ...prev,
+                                currentPage: page,
+                            };
+                        });
+                    },
+                }}
+            />
             <Drawer
                 title="Create User"
                 open={drawerOpen}

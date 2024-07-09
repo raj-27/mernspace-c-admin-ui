@@ -124,8 +124,9 @@ const UserForm = () => {
                                         {tenants?.data?.map(
                                             (tenant: Tenant) => (
                                                 <Select.Option
-                                                    value={tenant.id}>
-                                                    {tenant.id}.{tenant.name}
+                                                    value={tenant.id}
+                                                    key={tenant.id}>
+                                                    {tenant.name}
                                                 </Select.Option>
                                             )
                                         )}
