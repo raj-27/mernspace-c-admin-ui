@@ -12,7 +12,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Link, Navigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createUser, getUsers } from '../../http/api';
-import { Tenant, useAuthStore } from '../../store';
+import { useAuthStore } from '../../store';
 import { User } from '../../types';
 import UserFilter from './UserFilter';
 import { useState } from 'react';
