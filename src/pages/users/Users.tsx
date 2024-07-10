@@ -11,7 +11,7 @@ import {
     theme,
 } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import {
     keepPreviousData,
     useMutation,
@@ -24,6 +24,7 @@ import UserFilter from './UserFilter';
 import { useMemo, useState } from 'react';
 import UserForm from './Forms/UserForm';
 import { debounce } from 'lodash';
+import { useAuthStore } from '../../store';
 
 const columns = [
     {
@@ -68,6 +69,10 @@ const columns = [
 ];
 
 const Users = () => {
+    const { user } = useAuthStore();
+    if (user?.role !== 'admin') {
+        return <Navigate to={'/'} replace={true} />;
+    }
     const [form] = Form.useForm();
     const [filterForm] = Form.useForm();
     const queryClient = useQueryClient();
@@ -147,10 +152,7 @@ const Users = () => {
                 {isError && <p>{error.message}</p>}
             </Flex>
             <Form form={filterForm} onFieldsChange={onFilterChange}>
-                <UserFilter
-                    onFilterChange={(filterName, filterValue) => {
-                        console.log({ filterName, filterValue });
-                    }}>
+                <UserFilter>
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
