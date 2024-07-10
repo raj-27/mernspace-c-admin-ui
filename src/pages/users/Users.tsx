@@ -11,7 +11,7 @@ import {
     theme,
 } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
     keepPreviousData,
     useMutation,
@@ -19,7 +19,6 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { createUser, getUsers } from '../../http/api';
-import { useAuthStore } from '../../store';
 import { FieldsData, Tenant, User } from '../../types';
 import UserFilter from './UserFilter';
 import { useMemo, useState } from 'react';
