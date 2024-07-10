@@ -18,7 +18,6 @@ import { ComponentType } from 'react';
 import { BagIcon } from '../components/icon/BagIcon';
 
 const { Title } = Typography;
-const style: React.CSSProperties = { background: '#0092ff', padding: '8px 0' };
 
 interface CardTitleProps {
     title: string;
