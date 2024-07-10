@@ -2,11 +2,18 @@ import { Breadcrumb, Button, Drawer, Form, Space, Table, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link, Navigate } from 'react-router-dom';
 import RestaurantFilter from './RestaurantFilter';
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useAuthStore } from '../../store';
 import { createTenant, getTenants } from '../../http/api';
 import RestaurantForm from './Forms/RestaurantForm';
+import { FieldData } from 'rc-field-form/lib/interface';
+import { debounce } from 'lodash';
 
 const columns = [
     {
@@ -33,21 +40,42 @@ const columns = [
 ];
 
 const Restaurants = () => {
+    const [tenantQueryParams, setTenantQueryParams] = useState({
+        currentPage: 1,
+        perPage: 5,
+    });
     const queryClient = useQueryClient();
     const [form] = Form.useForm();
+    const [filterForm] = Form.useForm();
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const { user } = useAuthStore();
 
     if (user?.role !== 'admin') {
         return <Navigate to={'/'} replace={true} />;
     }
+
+    const debouncedQUpdate = useMemo(() => {
+        return debounce((value: string | undefined | unknown) => {
+            setTenantQueryParams((prev) => ({ ...prev, q: value }));
+        }, 1000);
+    }, []);
+
     const { data: tenants, isLoading } = useQuery({
-        queryKey: ['tenants'],
-        queryFn: getTenants,
+        queryKey: ['tenants', tenantQueryParams],
+        queryFn: async () => {
+            const filterParams = Object.fromEntries(
+                Object.entries(tenantQueryParams).filter((item) => !!item[1])
+            );
+            const queryString = new URLSearchParams(
+                filterParams as unknown as Record<string, string>
+            ).toString();
+            return getTenants(queryString).then((res) => res.data);
+        },
+        placeholderData: keepPreviousData,
     });
 
     const { mutate: tenantMutate } = useMutation({
-        mutationKey: ['user'],
+        mutationKey: ['tenant'],
         mutationFn: createTenant,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tenants'] });
@@ -66,6 +94,17 @@ const Restaurants = () => {
         tenantMutate(form.getFieldsValue());
     };
 
+    const onFilterFieldChange = (changeFields: FieldData[]) => {
+        let [changeFilterData] = changeFields.map((field) => {
+            return {
+                [field.name[0]]: field.value,
+            };
+        });
+        if ('q' in changeFilterData) {
+            debouncedQUpdate(changeFilterData.q);
+        }
+    };
+
     return (
         <Space direction="vertical" style={{ width: '100%' }} size={'large'}>
             <Breadcrumb
@@ -74,18 +113,32 @@ const Restaurants = () => {
                     { title: 'Restaurants' },
                 ]}
             />
-            <RestaurantFilter
-                onFilterChange={(filterName, filterValue) => {
-                    console.log({ filterName, filterValue });
-                }}>
-                <Button
-                    type="primary"
-                    onClick={() => setDrawerOpen(true)}
-                    icon={<PlusOutlined />}>
-                    Create Tenant
-                </Button>
-            </RestaurantFilter>
-            <Table columns={columns} dataSource={tenants?.data} rowKey={'id'} />
+            <Form form={filterForm} onFieldsChange={onFilterFieldChange}>
+                <RestaurantFilter>
+                    <Button
+                        type="primary"
+                        onClick={() => setDrawerOpen(true)}
+                        icon={<PlusOutlined />}>
+                        Create Tenant
+                    </Button>
+                </RestaurantFilter>
+            </Form>
+            <Table
+                columns={columns}
+                dataSource={tenants?.data}
+                rowKey={'id'}
+                pagination={{
+                    current: tenantQueryParams.currentPage,
+                    pageSize: tenantQueryParams.perPage,
+                    total: tenants.count,
+                    onChange: (value) => {
+                        setTenantQueryParams((prev) => ({
+                            ...prev,
+                            currentPage: value,
+                        }));
+                    },
+                }}
+            />
 
             <Drawer
                 title="Create Tenant"

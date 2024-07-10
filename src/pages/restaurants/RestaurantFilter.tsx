@@ -1,19 +1,18 @@
-import { Card, Flex, Input } from 'antd';
+import { Card, Flex, Form, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { UsersFilterProps } from '../../types';
 
-const RestaurantFilter = ({ onFilterChange, children }: UsersFilterProps) => {
+const RestaurantFilter = ({ children }: UsersFilterProps) => {
     return (
         <Card bordered={false}>
             <Flex gap={10} justify="space-between" align="center">
-                <Input
-                    style={{ width: 300 }}
-                    placeholder="Search"
-                    prefix={<SearchOutlined />}
-                    onChange={(e) =>
-                        onFilterChange('userSearchQuery', e.target.value)
-                    }
-                />
+                <Form.Item name="q">
+                    <Input
+                        style={{ width: 300 }}
+                        placeholder="Search"
+                        prefix={<SearchOutlined />}
+                    />
+                </Form.Item>
                 {children}
             </Flex>
         </Card>

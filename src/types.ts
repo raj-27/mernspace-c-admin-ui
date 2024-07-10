@@ -12,7 +12,7 @@ export interface User {
 }
 
 export type UsersFilterProps = {
-    onFilterChange: (filterName: string, filterValue: string) => void;
+    onFilterChange?: (filterName: string, filterValue: string) => void;
     children: React.ReactNode;
 };
 
