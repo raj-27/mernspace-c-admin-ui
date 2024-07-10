@@ -1,4 +1,4 @@
-import { NavLink, Navigate, Outlet } from 'react-router-dom';
+import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Icon, { BellOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../store';
 import {
@@ -31,12 +31,6 @@ function getItems(role: string) {
             icon: <Icon component={Home} />,
             label: <NavLink to="/">Home</NavLink>,
         },
-
-        {
-            key: '/restaurants',
-            icon: <Icon component={foodIcon} />,
-            label: <NavLink to="/restaurants">Restaurants</NavLink>,
-        },
         {
             key: '/products',
             icon: <Icon component={BasketIcon} />,
@@ -55,12 +49,18 @@ function getItems(role: string) {
             icon: <Icon component={UserIcon} />,
             label: <NavLink to="/users">Users</NavLink>,
         });
+        menus.splice(2, 0, {
+            key: '/restaurants',
+            icon: <Icon component={foodIcon} />,
+            label: <NavLink to="/restaurants">Restaurants</NavLink>,
+        });
         return menus;
     }
     return baseItem;
 }
 
 const Dashboard = () => {
+    const location = useLocation();
     const { logout: logoutFromStore } = useAuthStore();
     const { mutate: logoutMutate } = useMutation({
         mutationKey: ['logout'],
@@ -79,8 +79,14 @@ const Dashboard = () => {
     } = theme.useToken();
 
     if (user === null) {
-        return <Navigate to="/auth/login" replace={true} />;
+        return (
+            <Navigate
+                to={`/auth/login?returnTo=${location.pathname}`}
+                replace={true}
+            />
+        );
     }
+    console.log(location.pathname);
     const items = getItems(user?.role);
     return (
         <div>
@@ -95,7 +101,7 @@ const Dashboard = () => {
                     </div>
                     <Menu
                         theme="light"
-                        defaultSelectedKeys={['/']}
+                        defaultSelectedKeys={[location.pathname]}
                         mode="inline"
                         items={items}
                     />
@@ -133,7 +139,7 @@ const Dashboard = () => {
                                             backgroundColor: '#fde3cf',
                                             color: '#f56a00',
                                         }}>
-                                        U
+                                        {user?.firstName?.[0]}
                                     </Avatar>
                                 </Dropdown>
                             </Space>
