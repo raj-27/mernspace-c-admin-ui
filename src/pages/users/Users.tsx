@@ -181,6 +181,9 @@ const Users = () => {
                             };
                         });
                     },
+                    showTotal(total, range) {
+                        return `showing ${range[0]}-${range[1]} of total ${total}`;
+                    },
                 }}
             />
             <Drawer
