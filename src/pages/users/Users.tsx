@@ -2,21 +2,29 @@ import {
     Breadcrumb,
     Button,
     Drawer,
+    Flex,
     Form,
+    Spin,
     Space,
     Table,
     Tag,
     theme,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Link, Navigate } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { createUser, getUsers } from '../../http/api';
 import { useAuthStore } from '../../store';
-import { User } from '../../types';
+import { FieldsData, Tenant, User } from '../../types';
 import UserFilter from './UserFilter';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import UserForm from './Forms/UserForm';
+import { debounce } from 'lodash';
 
 const columns = [
     {
@@ -49,83 +57,109 @@ const columns = [
             return <Tag color="orange">{text}</Tag>;
         },
     },
-    // {
-    //     title: 'Tenant',
-    //     dataIndex: 'tenant',
-    //     ley: 'tenant',
-    //     render: (tenant: Tenant) => {
-    //         return <div>{tenant?.name ?? 'null'}</div>;
-    //     },
-    // },
+    {
+        title: 'Tenant',
+        dataIndex: 'tenant',
+        ley: 'tenant',
+        render: (tenant: Tenant) => {
+            console.log(tenant);
+            return <div>{tenant?.name ?? 'null'}</div>;
+        },
+    },
 ];
 
 const Users = () => {
     const [form] = Form.useForm();
+    const [filterForm] = Form.useForm();
     const queryClient = useQueryClient();
     const [queryParams, setQueryParams] = useState({
         perPage: 5,
         currentPage: 1,
     });
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const { user } = useAuthStore();
     const {
         token: { colorBgLayout },
     } = theme.useToken();
-    if (user?.role !== 'admin') {
-        return <Navigate to={'/'} replace={true} />;
-    }
-    const { data: users, isLoading } = useQuery({
+
+    const debouncedQUpdate = useMemo(() => {
+        return debounce((value: string | undefined) => {
+            setQueryParams((prev) => ({ ...prev, q: value }));
+        }, 1000);
+    }, []);
+
+    const {
+        data: users,
+        isFetching,
+        isError,
+        error,
+    } = useQuery({
         queryKey: ['users', queryParams],
-        queryFn: () => {
+        queryFn: async () => {
+            const filterParams = Object.fromEntries(
+                Object.entries(queryParams).filter((item) => !!item[1])
+            );
             const queryString = new URLSearchParams(
-                queryParams as unknown as Record<string, string>
+                filterParams as unknown as Record<string, string>
             ).toString();
             return getUsers(queryString).then((res) => res.data);
         },
+        placeholderData: keepPreviousData,
     });
-
-    console.log(users);
 
     const { mutate: userMutate } = useMutation({
         mutationKey: ['user'],
         mutationFn: createUser,
-        onSuccess: () => {
+        onSuccess: async () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
             setDrawerOpen(false);
+            form.resetFields();
             return;
         },
     });
-
-    if (isLoading) {
-        return <h4>Loading...</h4>;
-    }
 
     const handleFormSubmit = async () => {
         await form.validateFields();
         userMutate(form.getFieldsValue());
     };
 
+    const onFilterChange = (changeFields: FieldsData[]) => {
+        const [changeFilterFields] = changeFields.map((field) => ({
+            [field.name[0]]: field.value,
+        }));
+        if ('q' in changeFilterFields) {
+            debouncedQUpdate(changeFilterFields.q);
+        } else {
+            setQueryParams((prev) => ({ ...prev, ...changeFilterFields }));
+        }
+    };
+
     return (
         <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
-            <Breadcrumb
-                items={[
-                    {
-                        title: <Link to={'/'}>Dashboard</Link>,
-                    },
-                    { title: 'Users' },
-                ]}
-            />
-            <UserFilter
-                onFilterChange={(filterName, filterValue) => {
-                    console.log({ filterName, filterValue });
-                }}>
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => setDrawerOpen(true)}>
-                    Create User
-                </Button>
-            </UserFilter>
+            <Flex justify="space-between" align="center">
+                <Breadcrumb
+                    items={[
+                        {
+                            title: <Link to={'/'}>Dashboard</Link>,
+                        },
+                        { title: 'Users' },
+                    ]}
+                />
+                {isFetching && <Spin indicator={<LoadingOutlined spin />} />}
+                {isError && <p>{error.message}</p>}
+            </Flex>
+            <Form form={filterForm} onFieldsChange={onFilterChange}>
+                <UserFilter
+                    onFilterChange={(filterName, filterValue) => {
+                        console.log({ filterName, filterValue });
+                    }}>
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setDrawerOpen(true)}>
+                        Create User
+                    </Button>
+                </UserFilter>
+            </Form>
             <Table
                 columns={columns}
                 dataSource={users?.data}
