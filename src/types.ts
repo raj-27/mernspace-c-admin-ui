@@ -9,6 +9,16 @@ export interface User {
     lastName: string;
     email: string;
     role: string;
+    tenant: Tenant | null;
+}
+
+export interface CreateUserData {
+    email: string;
+    id: number;
+    firstName: string;
+    lastName: string;
+    role: string;
+    tenantId: number | null;
 }
 
 export type UsersFilterProps = {
