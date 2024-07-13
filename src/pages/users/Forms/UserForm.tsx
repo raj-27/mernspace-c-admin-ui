@@ -3,10 +3,11 @@ import { Card, Col, Form, Input, Row, Select, Space } from 'antd';
 import { getTenants } from '../../../http/api';
 import { Tenant } from '../../../types';
 
-const UserForm = () => {
+const UserForm = ({ isEditMode = false }: { isEditMode: boolean }) => {
     const { data: tenants } = useQuery({
         queryKey: ['tenants'],
-        queryFn: getTenants,
+        queryFn: () =>
+            getTenants('perPage=10&currentPage=1').then((res) => res.data),
     });
     return (
         <Row>
@@ -59,23 +60,26 @@ const UserForm = () => {
                             </Col>
                         </Row>
                     </Card>
-                    <Card title="Security info">
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item
-                                    label="Password"
-                                    name="password"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Password is requirred',
-                                        },
-                                    ]}>
-                                    <Input size="middle" type="password" />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Card>
+                    {!isEditMode && (
+                        <Card title="Security info">
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Password"
+                                        name="password"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    'Password is requirred',
+                                            },
+                                        ]}>
+                                        <Input size="middle" type="password" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Card>
+                    )}
                     <Card title="Role">
                         <Row gutter={20}>
                             <Col span={12}>
@@ -89,6 +93,7 @@ const UserForm = () => {
                                         },
                                     ]}>
                                     <Select
+                                        id="selectBoxUserForm"
                                         style={{ width: '100%' }}
                                         placeholder="Role"
                                         allowClear={true}
