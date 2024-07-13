@@ -86,7 +86,6 @@ const Dashboard = () => {
             />
         );
     }
-    console.log(location.pathname);
     const items = getItems(user?.role);
     return (
         <div>
