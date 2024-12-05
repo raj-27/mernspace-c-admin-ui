@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <QueryClientProvider client={queryClient}>
             <ConfigProvider
                 theme={{
-                    algorithm: theme.darkAlgorithm,
+                    // algorithm: theme.darkAlgorithm,
                     token: {
                         colorPrimary: '#f65f42',
                         colorLink: '#f65f42',

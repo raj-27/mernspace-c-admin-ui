@@ -22,3 +22,5 @@ export const createTenant = (tenant: Tenant) => api.post('/tenants', tenant);
 export const updateTenant = (tenant: Tenant, id: number) => {
     return api.patch(`/tenants/${id}`, tenant);
 };
+
+// Catalog Service
