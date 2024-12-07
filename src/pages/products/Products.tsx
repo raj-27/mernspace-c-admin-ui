@@ -24,6 +24,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getProducts } from '../../http/api';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { debounce } from 'lodash';
+import { useAuthStore } from '../../store';
 
 const columns = [
     {
@@ -77,10 +78,12 @@ const columns = [
 ];
 
 const Products = () => {
+    const { user } = useAuthStore();
     const [filterForm] = Form.useForm();
     const [queryParams, setQueryParams] = useState({
         limit: PER_PAGE,
         page: 1,
+        tenantId: user!.tenant?.id,
     });
     const {
         data: products,

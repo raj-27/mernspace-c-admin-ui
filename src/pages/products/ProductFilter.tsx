@@ -14,16 +14,22 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { getCategories, getTenants } from '../../http/api';
 import { Category, Tenant } from '../../types';
+import { useAuthStore } from '../../store';
+import { ROLES } from '../../constants';
 
 type ProductFilterProps = {
     children?: React.ReactNode;
 };
 
 const ProductFilter = ({ children }: ProductFilterProps) => {
+    const { user } = useAuthStore();
     const { data: restaurants } = useQuery({
         queryKey: ['restaurants'],
         queryFn: () => {
-            return getTenants('perPage=10&currentPage=1');
+            if (user!.role === ROLES.ADMIN) {
+                return getTenants('perPage=10&currentPage=1');
+            }
+            return;
         },
     });
 
@@ -67,27 +73,29 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                                 </Select>
                             </Form.Item>
                         </Col>
+                        {user!.role === ROLES.ADMIN && (
+                            <Col span={6}>
+                                <Form.Item name="tenantId">
+                                    <Select
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Restaurent"
+                                        allowClear={true}>
+                                        {restaurants?.data?.data?.map(
+                                            (restaurant: Tenant) => {
+                                                return (
+                                                    <Select.Option
+                                                        key={restaurant.id}
+                                                        value={restaurant.id}>
+                                                        {restaurant.name}
+                                                    </Select.Option>
+                                                );
+                                            }
+                                        )}
+                                    </Select>
+                                </Form.Item>
+                            </Col>
+                        )}
 
-                        <Col span={6}>
-                            <Form.Item name="tenantId">
-                                <Select
-                                    style={{ width: '100%' }}
-                                    placeholder="Select Restaurent"
-                                    allowClear={true}>
-                                    {restaurants?.data?.data?.map(
-                                        (restaurant: Tenant) => {
-                                            return (
-                                                <Select.Option
-                                                    key={restaurant.id}
-                                                    value={restaurant.id}>
-                                                    {restaurant.name}
-                                                </Select.Option>
-                                            );
-                                        }
-                                    )}
-                                </Select>
-                            </Form.Item>
-                        </Col>
                         <Col span={6}>
                             <Space>
                                 <Form.Item name="isPublish">
