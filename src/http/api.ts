@@ -1,26 +1,34 @@
+import { AxiosResponse } from 'axios'; // Axios types import karna zaroori hai
 import { CreateUserData, Credentials, Tenant, User } from '../types';
-import { api } from './client';
+import { api, catalogApi } from './client';
 
-export const login = (credential: Credentials) =>
+export const login = (credential: Credentials): Promise<AxiosResponse<any>> =>
     api.post('/auth/login', credential);
 
 // Users Operation
-export const self = () => api.get('/auth/self');
-export const logout = () => api.post('/auth/logout');
-export const getUsers = (queryString: string) =>
+export const self = (): Promise<AxiosResponse<any>> => api.get('/auth/self');
+export const logout = (): Promise<AxiosResponse<any>> =>
+    api.post('/auth/logout');
+export const getUsers = (queryString: string): Promise<AxiosResponse<any>> =>
     api.get(`/users?${queryString}`);
-export const createUser = (user: User) => api.post('/users', user);
-export const updateUser = (user: CreateUserData, id: number) =>
-    api.patch(`users/${id}`, user);
+export const createUser = (user: User): Promise<AxiosResponse<any>> =>
+    api.post('/users', user);
+export const updateUser = (
+    user: CreateUserData,
+    id: number
+): Promise<AxiosResponse<any>> => api.patch(`users/${id}`, user);
 
 // Tenants Operation
-export const getTenants = (queryString: string) =>
+export const getTenants = (queryString: string): Promise<AxiosResponse<any>> =>
     api.get(`/tenants?${queryString}`);
-
-export const createTenant = (tenant: Tenant) => api.post('/tenants', tenant);
-
-export const updateTenant = (tenant: Tenant, id: number) => {
-    return api.patch(`/tenants/${id}`, tenant);
-};
+export const createTenant = (tenant: Tenant): Promise<AxiosResponse<any>> =>
+    api.post('/tenants', tenant);
+export const updateTenant = (
+    tenant: Tenant,
+    id: number
+): Promise<AxiosResponse<any>> => api.patch(`/tenants/${id}`, tenant);
 
 // Catalog Service
+export const getCategory = (): Promise<AxiosResponse<any>> => {
+    return catalogApi.get('/categories');
+};

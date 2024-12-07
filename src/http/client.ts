@@ -1,8 +1,19 @@
 import axios from 'axios';
 import { useAuthStore } from '../store';
 
+// Need to setup api gateway
+
 export const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEN_API_URL,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    },
+});
+
+export const catalogApi = axios.create({
+    baseURL: import.meta.env.VITE_CATALOG_API_URL,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',

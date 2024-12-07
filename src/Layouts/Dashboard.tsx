@@ -21,7 +21,6 @@ import GiftIcon from '../components/icon/GiftIcon';
 import BasketIcon from '../components/icon/BasketIcon';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '../http/api';
-import toast from 'react-hot-toast';
 const { Sider, Content, Header, Footer } = Layout;
 
 function getItems(role: string) {
@@ -147,9 +146,7 @@ const Dashboard = () => {
                     <Content style={{ margin: 24 }}>
                         <Outlet />
                     </Content>
-                    <Footer style={{ textAlign: 'center' }}>
-                        Rambom Pizza Shop
-                    </Footer>
+                    <Footer style={{ textAlign: 'center' }}>Pizza Shop</Footer>
                 </Layout>
             </Layout>
         </div>
