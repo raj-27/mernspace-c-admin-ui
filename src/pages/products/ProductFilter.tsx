@@ -12,7 +12,7 @@ import {
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { getCategory, getTenants } from '../../http/api';
+import { getCategories, getTenants } from '../../http/api';
 import { Category, Tenant } from '../../types';
 
 type ProductFilterProps = {
@@ -30,11 +30,9 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
     const { data: categories } = useQuery({
         queryKey: ['categories'],
         queryFn: () => {
-            return getCategory();
+            return getCategories();
         },
     });
-
-    console.log(categories?.data?.categories);
 
     return (
         <Card>
@@ -50,7 +48,7 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                             </Form.Item>
                         </Col>
                         <Col span={6}>
-                            <Form.Item name="category">
+                            <Form.Item name="categoryId">
                                 <Select
                                     style={{ width: '100%' }}
                                     placeholder="Select Category"
@@ -71,7 +69,7 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                         </Col>
 
                         <Col span={6}>
-                            <Form.Item name="restaurent">
+                            <Form.Item name="tenantId">
                                 <Select
                                     style={{ width: '100%' }}
                                     placeholder="Select Restaurent"
@@ -92,7 +90,9 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                         </Col>
                         <Col span={6}>
                             <Space>
-                                <Switch defaultChecked onChange={() => {}} />
+                                <Form.Item name="isPublish">
+                                    <Switch onChange={() => {}} />
+                                </Form.Item>
                                 <Typography.Text>
                                     Show only publish
                                 </Typography.Text>

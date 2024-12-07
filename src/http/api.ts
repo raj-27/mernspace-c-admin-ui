@@ -29,6 +29,12 @@ export const updateTenant = (
 ): Promise<AxiosResponse<any>> => api.patch(`/tenants/${id}`, tenant);
 
 // Catalog Service
-export const getCategory = (): Promise<AxiosResponse<any>> => {
+export const getCategories = (): Promise<AxiosResponse<any>> => {
     return catalogApi.get('/categories');
+};
+
+export const getProducts = (
+    queryParams: string
+): Promise<AxiosResponse<any>> => {
+    return catalogApi.get(`/products?${queryParams}`);
 };
