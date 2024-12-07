@@ -101,7 +101,11 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                                 <Form.Item name="isPublish">
                                     <Switch onChange={() => {}} />
                                 </Form.Item>
-                                <Typography.Text>
+                                <Typography.Text
+                                    style={{
+                                        marginBottom: 21,
+                                        display: 'inline-block',
+                                    }}>
                                     Show only publish
                                 </Typography.Text>
                             </Space>
