@@ -134,6 +134,8 @@ const Products = () => {
         }, 500);
     }, []);
 
+    const onHandleSubmit = () => {};
+
     return (
         <>
             <Space
@@ -222,7 +224,7 @@ const Products = () => {
                                 }}>
                                 Cancel
                             </Button>
-                            <Button type="primary" onClick={() => {}}>
+                            <Button type="primary" onClick={onHandleSubmit}>
                                 Submit
                             </Button>
                         </Space>

@@ -77,7 +77,6 @@ const Dashboard = () => {
     } = theme.useToken();
 
     if (user === null) {
-        console.log('user is null');
         return (
             <Navigate
                 to={`/auth/login?returnTo=${location.pathname}`}

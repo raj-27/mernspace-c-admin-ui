@@ -18,7 +18,6 @@ const Root = () => {
         queryFn: getSelf,
         retry: (failureCount: number, error) => {
             if (error instanceof AxiosError && error.response?.status === 401) {
-                console.log(error.message);
                 return false;
             }
             return failureCount < 3;

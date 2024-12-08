@@ -99,7 +99,6 @@ const Restaurants = () => {
                 (res) => res.data
             ),
         onSuccess: () => {
-            console.log('Succcess');
             queryClient.invalidateQueries({ queryKey: ['tenants'] });
             form.resetFields();
             setCurrentEditingTenant(null);
@@ -123,7 +122,6 @@ const Restaurants = () => {
             tenantMutate(form.getFieldsValue());
         }
     };
-    console.log({ currentEditingTenant });
 
     const onFilterFieldChange = (changeFields: FieldData[]) => {
         let [changeFilterData] = changeFields.map((field) => {

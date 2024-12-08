@@ -39,7 +39,6 @@ api.interceptors.response.use(
                 await refreshToken();
                 return api.request({ ...originalRequest, headers });
             } catch (err) {
-                console.log('Refresh token error', err);
                 useAuthStore.getState().logout();
                 return Promise.reject(err);
             }

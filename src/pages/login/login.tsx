@@ -19,8 +19,6 @@ import Logo from '../../components/icon/Logo';
 import toast from 'react-hot-toast';
 
 const loginUser = async (credential: Credentials) => {
-    console.log(credential);
-
     const data = await login(credential);
     return data;
 };
@@ -31,7 +29,6 @@ const getSelf = async () => {
 };
 
 const LoginPage = () => {
-    console.log('Dashboard view');
     const { isAllowed } = usePermission(['admin', 'manager']);
     const { setUser, logout: logoutFromStore } = useAuthStore();
     const { refetch } = useQuery({
@@ -54,8 +51,6 @@ const LoginPage = () => {
         mutationFn: loginUser,
         onSuccess: async () => {
             const selfData = await refetch();
-            console.log(selfData);
-
             if (!isAllowed(selfData.data.role)) {
                 logoutMutate();
                 return;
