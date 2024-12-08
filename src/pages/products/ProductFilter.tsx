@@ -27,7 +27,7 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
         queryKey: ['restaurants'],
         queryFn: () => {
             if (user!.role === ROLES.ADMIN) {
-                return getTenants('perPage=10&currentPage=1');
+                return getTenants();
             }
             return;
         },

@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Drawer, Form, Space, Table } from 'antd';
+import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link, Navigate } from 'react-router-dom';
 import RestaurantFilter from './RestaurantFilter';
@@ -46,6 +46,9 @@ const Restaurants = () => {
     const [filterForm] = Form.useForm();
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const { user } = useAuthStore();
+    const {
+        token: { colorBgLayout },
+    } = theme.useToken();
 
     if (user?.role !== 'admin') {
         return <Navigate to={'/'} replace={true} />;
@@ -187,6 +190,7 @@ const Restaurants = () => {
             <Drawer
                 title={currentEditingTenant ? 'Edit Tenant' : 'Create Tenant'}
                 open={drawerOpen}
+                styles={{ body: { background: colorBgLayout } }}
                 width={650}
                 onClose={() => {
                     setDrawerOpen(false);

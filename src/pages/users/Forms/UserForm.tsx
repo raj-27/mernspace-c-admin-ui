@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, Col, Form, Input, Row, Select, Space } from 'antd';
 import { getTenants } from '../../../http/api';
 import { Tenant } from '../../../types';
+import { ROLES } from '../../../constants';
 
 const UserForm = ({ isEditMode = false }: { isEditMode: boolean }) => {
     const role = Form.useWatch('role');
@@ -111,7 +112,7 @@ const UserForm = ({ isEditMode = false }: { isEditMode: boolean }) => {
                                     </Select>
                                 </Form.Item>
                             </Col>
-                            {role === 'manager' && (
+                            {role === ROLES.MANAGER && (
                                 <Col span={12}>
                                     <Form.Item
                                         label="Tenant Id"

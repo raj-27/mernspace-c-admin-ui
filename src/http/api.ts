@@ -19,7 +19,7 @@ export const updateUser = (
 ): Promise<AxiosResponse<any>> => api.patch(`users/${id}`, user);
 
 // Tenants Operation
-export const getTenants = (queryString: string): Promise<AxiosResponse<any>> =>
+export const getTenants = (queryString?: string): Promise<AxiosResponse<any>> =>
     api.get(`/tenants?${queryString}`);
 export const createTenant = (tenant: Tenant): Promise<AxiosResponse<any>> =>
     api.post('/tenants', tenant);

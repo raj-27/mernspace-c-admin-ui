@@ -9,6 +9,8 @@ import {
     Typography,
     Image,
     Spin,
+    Drawer,
+    theme,
 } from 'antd';
 import {
     LoadingOutlined,
@@ -25,6 +27,7 @@ import { getProducts } from '../../http/api';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { debounce } from 'lodash';
 import { useAuthStore } from '../../store';
+import ProductForm from './Forms/ProductForm';
 
 const columns = [
     {
@@ -79,12 +82,18 @@ const columns = [
 
 const Products = () => {
     const { user } = useAuthStore();
+    const [form] = Form.useForm();
     const [filterForm] = Form.useForm();
     const [queryParams, setQueryParams] = useState({
         limit: PER_PAGE,
         page: 1,
         tenantId: user!.tenant?.id,
     });
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const {
+        token: { colorBgLayout },
+    } = theme.useToken();
+
     const {
         data: products,
         isFetching,
@@ -108,7 +117,6 @@ const Products = () => {
         const [changeFilterFields] = changeFields.map((field) => ({
             [field.name[0]]: field.value,
         }));
-        console.log(changeFilterFields);
         if ('q' in changeFilterFields) {
             debouncedQUpdate(changeFilterFields.q as string);
         } else {
@@ -154,8 +162,7 @@ const Products = () => {
                         <Button
                             type="primary"
                             icon={<PlusOutlined />}
-                            // onClick={() => setDrawerOpen(true)}
-                        >
+                            onClick={() => setDrawerOpen(true)}>
                             Add Product
                         </Button>
                     </ProductFilter>
@@ -195,6 +202,36 @@ const Products = () => {
                         },
                     }}
                 />
+                <Drawer
+                    title={'Create Product'}
+                    open={drawerOpen}
+                    styles={{ body: { background: colorBgLayout } }}
+                    width={650}
+                    onClose={() => {
+                        setDrawerOpen(false);
+                        form.resetFields();
+                        // setCurrentEditingUser(null);
+                    }}
+                    destroyOnClose={true}
+                    extra={
+                        <Space>
+                            <Button
+                                onClick={() => {
+                                    setDrawerOpen(false);
+                                    form.resetFields();
+                                }}>
+                                Cancel
+                            </Button>
+                            <Button type="primary" onClick={() => {}}>
+                                Submit
+                            </Button>
+                        </Space>
+                    }>
+                    <Form layout="vertical" form={form}>
+                        {/* <UserForm isEditMode={!!currentEditingUser} /> */}
+                        <ProductForm />
+                    </Form>
+                </Drawer>
             </Space>
         </>
     );
