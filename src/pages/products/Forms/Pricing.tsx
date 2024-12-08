@@ -1,18 +1,6 @@
-import {
-    Card,
-    Col,
-    Form,
-    Input,
-    InputNumber,
-    Row,
-    Space,
-    Typography,
-} from 'antd';
-import { Category } from '../../../types';
+import { Card, Col, Form, InputNumber, Row, Space, Typography } from 'antd';
+import { PricingProp } from '../../../types';
 
-type PricingProp = {
-    selectedCategory: Category;
-};
 const Pricing = ({ selectedCategory }: PricingProp) => {
     if (!selectedCategory) {
         return null;

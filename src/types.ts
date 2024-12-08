@@ -67,3 +67,7 @@ export type Product = {
     createdAt: string;
     image: string;
 };
+
+export type PricingProp = {
+    selectedCategory: Category;
+};

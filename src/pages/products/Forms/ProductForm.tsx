@@ -186,7 +186,15 @@ const ProductForm = () => {
                             }
                         />
                     )}
-                    {selectedCategory && <Attribute />}
+                    {selectedCategory && (
+                        <Attribute
+                            selectedCategory={
+                                selectedCategory
+                                    ? JSON.parse(selectedCategory)
+                                    : null
+                            }
+                        />
+                    )}
                     {/* Other Property */}
                     <Card title="Other Properties">
                         <Row gutter={20}>
