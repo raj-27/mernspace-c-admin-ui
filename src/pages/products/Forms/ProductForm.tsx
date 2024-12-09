@@ -9,6 +9,7 @@ import {
     Switch,
     Typography,
     Upload,
+    UploadProps,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Category, Tenant } from '../../../types';
@@ -18,10 +19,12 @@ import { useAuthStore } from '../../../store';
 import { ROLES } from '../../../constants';
 import Pricing from './Pricing';
 import Attribute from './Attribute';
+import { useState } from 'react';
 
 const ProductForm = () => {
     // const role = Form.useWatch('role');
     const selectedCategory = Form.useWatch('categoryId');
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     const { user } = useAuthStore();
     const { data: restaurants } = useQuery({
@@ -40,6 +43,18 @@ const ProductForm = () => {
             return getCategories();
         },
     });
+
+    const uploaderConfig: UploadProps = {
+        name: 'file',
+        multiple: false,
+        showUploadList: false,
+        beforeUpload: (file) => {
+            // validation logic can be added
+            // size validation can also added
+            setImageUrl(URL.createObjectURL(file));
+            return false;
+        },
+    };
 
     return (
         <Row>
@@ -128,14 +143,21 @@ const ProductForm = () => {
                                         name="avatar"
                                         listType="picture-card"
                                         className="avatar-uploader"
-                                        showUploadList={false}
-                                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload">
-                                        <Space direction="vertical">
-                                            <PlusOutlined />
-                                            <Typography.Text>
-                                                Upload
-                                            </Typography.Text>
-                                        </Space>
+                                        {...uploaderConfig}>
+                                        {imageUrl ? (
+                                            <img
+                                                src={imageUrl}
+                                                alt="product-image"
+                                                style={{ width: '100%' }}
+                                            />
+                                        ) : (
+                                            <Space direction="vertical">
+                                                <PlusOutlined />
+                                                <Typography.Text>
+                                                    Upload
+                                                </Typography.Text>
+                                            </Space>
+                                        )}
                                     </Upload>
                                 </Form.Item>
                             </Col>

@@ -28,7 +28,7 @@ const Pricing = ({ selectedCategory }: PricingProp) => {
                                                     <Form.Item
                                                         label={option}
                                                         name={[
-                                                            'priceConfig',
+                                                            'priceConfiguration',
                                                             JSON.stringify({
                                                                 configKey,
                                                                 priceType:

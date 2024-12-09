@@ -71,3 +71,6 @@ export type Product = {
 export type PricingProp = {
     selectedCategory: Category;
 };
+
+export type ImageField = { file: File };
+export type CreateProductData = Product & { image: ImageField };

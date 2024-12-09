@@ -29,12 +29,13 @@ export const updateTenant = (
 ): Promise<AxiosResponse<any>> => api.patch(`/tenants/${id}`, tenant);
 
 // Catalog Service
-export const getCategories = (): Promise<AxiosResponse<any>> => {
-    return catalogApi.get('/categories');
-};
+export const getCategories = (): Promise<AxiosResponse<any>> =>
+    catalogApi.get('/categories');
 
-export const getProducts = (
-    queryParams: string
-): Promise<AxiosResponse<any>> => {
-    return catalogApi.get(`/products?${queryParams}`);
-};
+export const getProducts = (queryParams: string): Promise<AxiosResponse<any>> =>
+    catalogApi.get(`/products?${queryParams}`);
+
+export const createProduct = (product: FormData) =>
+    catalogApi.post('/products', product, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });

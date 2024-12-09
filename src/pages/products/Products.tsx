@@ -22,12 +22,18 @@ import ProductFilter from './ProductFilter';
 import { Product } from '../../types';
 import { useMemo, useState } from 'react';
 import { PER_PAGE } from '../../constants';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { getProducts } from '../../http/api';
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
+import { createProduct, getProducts } from '../../http/api';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { debounce } from 'lodash';
 import { useAuthStore } from '../../store';
 import ProductForm from './Forms/ProductForm';
+import { makeFormData } from './helper';
 
 const columns = [
     {
@@ -134,7 +140,54 @@ const Products = () => {
         }, 500);
     }, []);
 
-    const onHandleSubmit = () => {};
+    const queryClient = useQueryClient();
+    const { mutate: productMutate } = useMutation({
+        mutationKey: ['product'],
+        mutationFn: async (data: FormData) =>
+            createProduct(data).then((res) => res.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+            setDrawerOpen(false);
+            form.resetFields();
+            return;
+        },
+    });
+
+    const onHandleSubmit = async () => {
+        await form.validateFields();
+        const priceConfiguration = form.getFieldValue('priceConfiguration');
+        const pricing = Object.entries(priceConfiguration).reduce(
+            (acc, [key, value]) => {
+                const parseKey = JSON.parse(key);
+                return {
+                    ...acc,
+                    [parseKey.configKey]: {
+                        priceType: parseKey?.priceType,
+                        availableOptions: value,
+                    },
+                };
+            },
+            {}
+        );
+        // console.log(pricing);
+        const categoryId = JSON.parse(form.getFieldValue('categoryId'))._id;
+        const attributes = Object.entries(form.getFieldValue('attributes')).map(
+            ([key, value]) => {
+                return { name: key, value: value };
+            }
+        );
+        const postData = {
+            ...form.getFieldsValue(),
+            image: form.getFieldValue('image'),
+            isPublish: form.getFieldValue('isPublish') ? true : false,
+            categoryId,
+            priceConfiguration: pricing,
+            attributes,
+        };
+        console.log(postData);
+        const formData = makeFormData(postData);
+        await productMutate(formData);
+    };
 
     return (
         <>
