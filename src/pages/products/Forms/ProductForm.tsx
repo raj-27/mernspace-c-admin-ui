@@ -19,9 +19,7 @@ import Attribute from './Attribute';
 import ProductImage from './ProductImage';
 
 const ProductForm = () => {
-    // const role = Form.useWatch('role');
     const selectedCategory = Form.useWatch('categoryId');
-
     const { user } = useAuthStore();
     const { data: restaurants } = useQuery({
         queryKey: ['restaurants'],
@@ -119,38 +117,41 @@ const ProductForm = () => {
                     </Card>
 
                     {/* Tenant Info */}
-                    <Card title="Tenant Info">
-                        <Row gutter={20}>
-                            <Col span={24}>
-                                <Form.Item
-                                    label="Tenant Info"
-                                    name="tenantId"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Tenant id is required',
-                                        },
-                                    ]}>
-                                    <Select
-                                        size="large"
-                                        style={{ width: '100%' }}
-                                        placeholder="Tenant id"
-                                        allowClear={true}
-                                        onChange={() => {}}>
-                                        {restaurants?.data?.data?.map(
-                                            (tenant: Tenant) => (
-                                                <Select.Option
-                                                    value={tenant.id}
-                                                    key={tenant.id}>
-                                                    {tenant.name}
-                                                </Select.Option>
-                                            )
-                                        )}
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Card>
+                    {user!.role === ROLES.ADMIN && (
+                        <Card title="Tenant Info">
+                            <Row gutter={20}>
+                                <Col span={24}>
+                                    <Form.Item
+                                        label="Tenant Info"
+                                        name="tenantId"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    'Tenant id is required',
+                                            },
+                                        ]}>
+                                        <Select
+                                            size="large"
+                                            style={{ width: '100%' }}
+                                            placeholder="Tenant id"
+                                            allowClear={true}
+                                            onChange={() => {}}>
+                                            {restaurants?.data?.data?.map(
+                                                (tenant: Tenant) => (
+                                                    <Select.Option
+                                                        value={tenant.id}
+                                                        key={tenant.id}>
+                                                        {tenant.name}
+                                                    </Select.Option>
+                                                )
+                                            )}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Card>
+                    )}
 
                     {/* Dynamic Pricing */}
                     {selectedCategory && (

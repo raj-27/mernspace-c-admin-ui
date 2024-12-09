@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 import ProductFilter from './ProductFilter';
 import { Product } from '../../types';
 import { useMemo, useState } from 'react';
-import { PER_PAGE } from '../../constants';
+import { PER_PAGE, ROLES } from '../../constants';
 import {
     keepPreviousData,
     useMutation,
@@ -180,6 +180,10 @@ const Products = () => {
             ...form.getFieldsValue(),
             image: form.getFieldValue('image'),
             isPublish: form.getFieldValue('isPublish') ? true : false,
+            tenantId:
+                user!.role == ROLES.ADMIN
+                    ? form.getFieldValue('tenantId')
+                    : user?.tenant?.id,
             categoryId,
             priceConfiguration: pricing,
             attributes,
