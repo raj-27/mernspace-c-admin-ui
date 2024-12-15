@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 import ProductFilter from './ProductFilter';
 import { Product } from '../../types';
 import { useEffect, useMemo, useState } from 'react';
-import { PER_PAGE, ROLES } from '../../constants';
+import { PER_PAGE } from '../../constants';
 import {
     keepPreviousData,
     useMutation,
