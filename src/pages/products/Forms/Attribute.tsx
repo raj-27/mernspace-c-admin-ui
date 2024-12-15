@@ -1,15 +1,28 @@
 import { Card, Col, Form, Radio, Row, Switch, Typography } from 'antd';
-import { PricingProp } from '../../../types';
+import { Category } from '../../../types';
+import { useQuery } from '@tanstack/react-query';
+import { getCategory } from '../../../http/api';
 
-const Attribute = ({ selectedCategory }: PricingProp) => {
-    if (!selectedCategory) {
-        return;
-    }
+type PricingProps = {
+    selectedCategory: string;
+};
+
+const Attributes = ({ selectedCategory }: PricingProps) => {
+    const { data: fetchedCategory } = useQuery<Category>({
+        queryKey: ['category', selectedCategory],
+        queryFn: () => {
+            return getCategory(selectedCategory).then((res) => res.data);
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
+
+    if (!fetchedCategory) return null;
+
     return (
         <Card
-            title={<Typography.Text>Attribute</Typography.Text>}
+            title={<Typography.Text>Attributes</Typography.Text>}
             bordered={false}>
-            {selectedCategory.attributes.map((attribute) => {
+            {fetchedCategory.attributes.map((attribute) => {
                 return (
                     <div key={attribute.name}>
                         {attribute.widgetType === 'radio' ? (
@@ -25,13 +38,15 @@ const Attribute = ({ selectedCategory }: PricingProp) => {
                                 ]}>
                                 <Radio.Group>
                                     {attribute.availableOptions.map(
-                                        (option) => (
-                                            <Radio.Button
-                                                value={option}
-                                                key={option}>
-                                                {option}
-                                            </Radio.Button>
-                                        )
+                                        (option) => {
+                                            return (
+                                                <Radio.Button
+                                                    value={option}
+                                                    key={option}>
+                                                    {option}
+                                                </Radio.Button>
+                                            );
+                                        }
                                     )}
                                 </Radio.Group>
                             </Form.Item>
@@ -39,10 +54,10 @@ const Attribute = ({ selectedCategory }: PricingProp) => {
                             <Row>
                                 <Col>
                                     <Form.Item
-                                        label={`${attribute.name}`}
                                         name={['attributes', attribute.name]}
-                                        initialValue={attribute.defaultValue}
-                                        valuePropName="checked">
+                                        valuePropName="checked"
+                                        label={attribute.name}
+                                        initialValue={attribute.defaultValue}>
                                         <Switch
                                             checkedChildren="Yes"
                                             unCheckedChildren="No"
@@ -58,4 +73,4 @@ const Attribute = ({ selectedCategory }: PricingProp) => {
     );
 };
 
-export default Attribute;
+export default Attributes;

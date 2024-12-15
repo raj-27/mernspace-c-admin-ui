@@ -32,10 +32,18 @@ export const updateTenant = (
 export const getCategories = (): Promise<AxiosResponse<any>> =>
     catalogApi.get('/categories');
 
-export const getProducts = (queryParams: string): Promise<AxiosResponse<any>> =>
+export const getCategory = (categoryId: string) =>
+    catalogApi.get(`/categories/${categoryId}`);
+
+export const getProducts = (queryParams: string) =>
     catalogApi.get(`/products?${queryParams}`);
 
 export const createProduct = (product: FormData) =>
     catalogApi.post('/products', product, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+export const updateProduct = (product: FormData, id: string) =>
+    catalogApi.put(`/products/${id}`, product, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });

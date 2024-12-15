@@ -2,8 +2,8 @@ import { Form, Space, Typography, Upload, UploadProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
-const ProductImage = () => {
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
+const ProductImage = ({ initialImage }: { initialImage: string }) => {
+    const [imageUrl, setImageUrl] = useState<string | null>(initialImage);
     const uploaderConfig: UploadProps = {
         name: 'file',
         multiple: false,

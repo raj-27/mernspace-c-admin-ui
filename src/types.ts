@@ -58,18 +58,25 @@ export interface Category {
     attributes: Attribute[];
 }
 
+export type ProductAttribute = {
+    name: string;
+    value: string | boolean;
+};
+
 export type Product = {
     _id: string;
     name: string;
     description: string;
     category: Category;
+    priceConfiguration: PriceConfiguration;
+    attributes: ProductAttribute[];
     isPublish: boolean;
     createdAt: string;
     image: string;
 };
 
 export type PricingProp = {
-    selectedCategory: Category;
+    selectedCategory: string;
 };
 
 export type ImageField = { file: File };

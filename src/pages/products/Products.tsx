@@ -20,7 +20,7 @@ import {
 import { Link } from 'react-router-dom';
 import ProductFilter from './ProductFilter';
 import { Product } from '../../types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PER_PAGE, ROLES } from '../../constants';
 import {
     keepPreviousData,
@@ -28,7 +28,7 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
-import { createProduct, getProducts } from '../../http/api';
+import { createProduct, getProducts, updateProduct } from '../../http/api';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { debounce } from 'lodash';
 import { useAuthStore } from '../../store';
@@ -96,6 +96,44 @@ const Products = () => {
         tenantId: user!.tenant?.id,
     });
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [selectedProduct, setCurrentProduct] = useState<Product | null>(null);
+
+    useEffect(() => {
+        if (selectedProduct) {
+            setDrawerOpen(true);
+            const priceConfiguration = Object.entries(
+                selectedProduct.priceConfiguration
+            ).reduce((acc, [key, value]) => {
+                const stringifiedKey = JSON.stringify({
+                    configurationKey: key,
+                    priceType: value.priceType,
+                });
+                return {
+                    ...acc,
+                    [stringifiedKey]: value.availableOptions,
+                };
+            }, {});
+
+            const attributes = selectedProduct.attributes.reduce(
+                (acc, item) => {
+                    return {
+                        ...acc,
+                        [item.name]: item.value,
+                    };
+                },
+                {}
+            );
+
+            form.setFieldsValue({
+                ...selectedProduct,
+                priceConfiguration,
+                attributes,
+                // Todo fix this
+                categoryId: selectedProduct.category._id,
+            });
+        }
+    }, [selectedProduct]);
+
     const {
         token: { colorBgLayout },
     } = theme.useToken();
@@ -143,8 +181,17 @@ const Products = () => {
     const queryClient = useQueryClient();
     const { mutate: productMutate, isPending } = useMutation({
         mutationKey: ['product'],
-        mutationFn: async (data: FormData) =>
-            createProduct(data).then((res) => res.data),
+        mutationFn: async (data: FormData) => {
+            if (selectedProduct) {
+                // edit mode
+                return updateProduct(data, selectedProduct._id).then(
+                    (res) => res.data
+                );
+            } else {
+                // create mode
+                return createProduct(data).then((res) => res.data);
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
             setDrawerOpen(false);
@@ -154,41 +201,73 @@ const Products = () => {
     });
 
     const onHandleSubmit = async () => {
+        // const dummy = {
+        //     Size: { priceType: 'base', availableOptions: { Small: 400, Medium: 600, Large: 800 } },
+        //     Crust: { priceType: 'aditional', availableOptions: { Thin: 50, Thick: 100 } },
+        // };
+
+        // const currentData = {
+        //     '{"configurationKey":"Size","priceType":"base"}': {
+        //         Small: 100,
+        //         Medium: 200,
+        //         Large: 400,
+        //     },
+        //     '{"configurationKey":"Crust","priceType":"aditional"}': {
+        //         Thin: 0,
+        //         Thick: 50,
+        //     },
+        // };
+
         await form.validateFields();
+
         const priceConfiguration = form.getFieldValue('priceConfiguration');
         const pricing = Object.entries(priceConfiguration).reduce(
             (acc, [key, value]) => {
-                const parseKey = JSON.parse(key);
+                const parsedKey = JSON.parse(key);
                 return {
                     ...acc,
-                    [parseKey.configKey]: {
-                        priceType: parseKey?.priceType,
+                    [parsedKey.configurationKey]: {
+                        priceType: parsedKey.priceType,
                         availableOptions: value,
                     },
                 };
             },
             {}
         );
-        // console.log(pricing);
-        const categoryId = JSON.parse(form.getFieldValue('categoryId'))._id;
+
+        const categoryId = form.getFieldValue('categoryId');
+        // const currentAttrs = {
+        //     isHit: 'No',
+        //     Spiciness: 'Less',
+        // };
+
+        // const attrs = [
+        //     { name: 'Is Hit', value: true },
+        //     { name: 'Spiciness', value: 'Hot' },
+        // ];
+
         const attributes = Object.entries(form.getFieldValue('attributes')).map(
             ([key, value]) => {
-                return { name: key, value: value };
+                return {
+                    name: key,
+                    value: value,
+                };
             }
         );
+
         const postData = {
             ...form.getFieldsValue(),
-            image: form.getFieldValue('image'),
-            isPublish: form.getFieldValue('isPublish') ? true : false,
             tenantId:
-                user!.role == ROLES.ADMIN
-                    ? form.getFieldValue('tenantId')
-                    : user?.tenant?.id,
+                user!.role === 'manager'
+                    ? user?.tenant?.id
+                    : form.getFieldValue('tenantId'),
+            isPublish: form.getFieldValue('isPublish') ? true : false,
+            image: form.getFieldValue('image'),
             categoryId,
             priceConfiguration: pricing,
             attributes,
         };
-        console.log(postData);
+
         const formData = makeFormData(postData);
         await productMutate(formData);
     };
@@ -233,9 +312,13 @@ const Products = () => {
                             title: 'Action',
                             dataIndex: 'tenant',
                             key: 'tenant',
-                            render: () => {
+                            render: (_, record: Product) => {
                                 return (
-                                    <Button type="link" onClick={() => {}}>
+                                    <Button
+                                        type="link"
+                                        onClick={() =>
+                                            setCurrentProduct(record)
+                                        }>
                                         Edit
                                     </Button>
                                 );
@@ -262,14 +345,14 @@ const Products = () => {
                     }}
                 />
                 <Drawer
-                    title={'Create Product'}
+                    title={selectedProduct ? 'Update Product' : 'Add Product'}
                     open={drawerOpen}
                     styles={{ body: { background: colorBgLayout } }}
                     width={650}
                     onClose={() => {
                         setDrawerOpen(false);
                         form.resetFields();
-                        // setCurrentEditingUser(null);
+                        setCurrentProduct(null);
                     }}
                     destroyOnClose={true}
                     extra={
@@ -278,6 +361,7 @@ const Products = () => {
                                 onClick={() => {
                                     setDrawerOpen(false);
                                     form.resetFields();
+                                    setCurrentProduct(null);
                                 }}>
                                 Cancel
                             </Button>
@@ -291,7 +375,7 @@ const Products = () => {
                     }>
                     <Form layout="vertical" form={form}>
                         {/* <UserForm isEditMode={!!currentEditingUser} /> */}
-                        <ProductForm />
+                        <ProductForm form={form} />
                     </Form>
                 </Drawer>
             </Space>

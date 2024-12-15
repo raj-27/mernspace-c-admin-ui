@@ -1,27 +1,37 @@
 import { Card, Col, Form, InputNumber, Row, Space, Typography } from 'antd';
-import { PricingProp } from '../../../types';
+import { Category, PricingProp } from '../../../types';
+import { useQuery } from '@tanstack/react-query';
+import { getCategory } from '../../../http/api';
 
 const Pricing = ({ selectedCategory }: PricingProp) => {
-    if (!selectedCategory) {
-        return null;
-    }
+    const { data: fetchedCategory } = useQuery<Category>({
+        queryKey: ['category', selectedCategory],
+        queryFn: () => {
+            return getCategory(selectedCategory).then((res) => res.data);
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
+
+    if (!fetchedCategory) return null;
+
     return (
         <Card
-            title={<Typography.Text>Product Price</Typography.Text>}
+            title={<Typography.Text>Product price</Typography.Text>}
             bordered={false}>
-            {Object.entries(selectedCategory?.priceConfiguration).map(
-                ([configKey, configValue]) => {
+            {Object.entries(fetchedCategory?.priceConfiguration).map(
+                ([configurationKey, configurationValue]) => {
                     return (
-                        <div key={configKey}>
+                        <div key={configurationKey}>
                             <Space
                                 direction="vertical"
                                 size="large"
                                 style={{ width: '100%' }}>
                                 <Typography.Text>
-                                    {`${configKey} (${configValue.priceType})`}
+                                    {`${configurationKey} (${configurationValue.priceType})`}
                                 </Typography.Text>
+
                                 <Row gutter={20}>
-                                    {configValue.availableOptions.map(
+                                    {configurationValue.availableOptions.map(
                                         (option: string) => {
                                             return (
                                                 <Col span={8} key={option}>
@@ -30,17 +40,12 @@ const Pricing = ({ selectedCategory }: PricingProp) => {
                                                         name={[
                                                             'priceConfiguration',
                                                             JSON.stringify({
-                                                                configKey,
+                                                                configurationKey:
+                                                                    configurationKey,
                                                                 priceType:
-                                                                    configValue.priceType,
+                                                                    configurationValue.priceType,
                                                             }),
                                                             option,
-                                                        ]}
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: `${option} is required`,
-                                                            },
                                                         ]}>
                                                         <InputNumber addonAfter="₹" />
                                                     </Form.Item>

@@ -2,6 +2,7 @@ import {
     Card,
     Col,
     Form,
+    FormInstance,
     Input,
     Row,
     Select,
@@ -9,7 +10,7 @@ import {
     Switch,
     Typography,
 } from 'antd';
-import { Category, Tenant } from '../../../types';
+import { Tenant } from '../../../types';
 import { getCategories, getTenants } from '../../../http/api';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../../store';
@@ -18,9 +19,10 @@ import Pricing from './Pricing';
 import Attribute from './Attribute';
 import ProductImage from './ProductImage';
 
-const ProductForm = () => {
+const ProductForm = ({ form }: { form: FormInstance }) => {
     const selectedCategory = Form.useWatch('categoryId');
     const { user } = useAuthStore();
+
     const { data: restaurants } = useQuery({
         queryKey: ['restaurants'],
         queryFn: () => {
@@ -74,11 +76,9 @@ const ProductForm = () => {
                                         allowClear={true}
                                         onChange={() => {}}>
                                         {categories?.data?.categories.map(
-                                            (category: Category) => (
+                                            (category: any) => (
                                                 <Select.Option
-                                                    value={JSON.stringify(
-                                                        category
-                                                    )}
+                                                    value={category._id}
                                                     key={category._id}>
                                                     {category.name}
                                                 </Select.Option>
@@ -111,7 +111,9 @@ const ProductForm = () => {
                     <Card title="Product Image">
                         <Row gutter={20}>
                             <Col span={12}>
-                                <ProductImage />
+                                <ProductImage
+                                    initialImage={form.getFieldValue('image')}
+                                />
                             </Col>
                         </Row>
                     </Card>
@@ -140,7 +142,9 @@ const ProductForm = () => {
                                             {restaurants?.data?.data?.map(
                                                 (tenant: Tenant) => (
                                                     <Select.Option
-                                                        value={tenant.id}
+                                                        value={String(
+                                                            tenant.id
+                                                        )}
                                                         key={tenant.id}>
                                                         {tenant.name}
                                                     </Select.Option>
@@ -155,22 +159,10 @@ const ProductForm = () => {
 
                     {/* Dynamic Pricing */}
                     {selectedCategory && (
-                        <Pricing
-                            selectedCategory={
-                                selectedCategory
-                                    ? JSON.parse(selectedCategory)
-                                    : null
-                            }
-                        />
+                        <Pricing selectedCategory={selectedCategory} />
                     )}
                     {selectedCategory && (
-                        <Attribute
-                            selectedCategory={
-                                selectedCategory
-                                    ? JSON.parse(selectedCategory)
-                                    : null
-                            }
-                        />
+                        <Attribute selectedCategory={selectedCategory} />
                     )}
                     {/* Other Property */}
                     <Card title="Other Properties">
@@ -179,7 +171,6 @@ const ProductForm = () => {
                                 <Space>
                                     <Form.Item name="isPublish">
                                         <Switch
-                                            onChange={() => {}}
                                             checkedChildren="Yes"
                                             unCheckedChildren="No"
                                         />
