@@ -53,3 +53,5 @@ export const updateTopping = (topping: FormData, id: string) =>
 
 // Order Serive
 export const getOrders = (queryString: string) => orderApi.get(`/orders?${queryString}`);
+export const getSingleOrder = (orderId: string, queryString: string) =>
+    orderApi.get(`/orders/${orderId}?${queryString}`);
