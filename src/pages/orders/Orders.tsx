@@ -19,11 +19,9 @@ const columns = [
     {
         title: 'Customer',
         dataIndex: 'customer',
-        key: 'customer[0]._id',
+        key: 'customer._id',
         render: (_text: string, record: Order) => {
-            return (
-                <Typography.Text>{record.customer[0].firstName + ' ' + record.customer[0].lastName}</Typography.Text>
-            );
+            return <Typography.Text>{record.customer.firstName + ' ' + record.customer.lastName}</Typography.Text>;
         },
     },
     {

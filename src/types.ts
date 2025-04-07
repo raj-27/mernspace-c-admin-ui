@@ -135,7 +135,7 @@ export interface CartItem extends Pick<Product, '_id' | 'name' | 'image' | 'pric
 export interface Order {
     _id: string;
     cart: CartItem[];
-    customer: Customer[];
+    customer: Customer;
     totalAmount: number;
     discount: number;
     taxes: number;
