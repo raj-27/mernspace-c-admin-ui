@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'; // Axios types import karna zaroori hai
-import { CreateUserData, Credentials, Tenant, User } from '../types';
+import { CreateUserData, Credentials, OrderStatus, Tenant, User } from '../types';
 import { api, catalogApi, orderApi } from './client';
 
 export const login = (credential: Credentials): Promise<AxiosResponse<any>> => api.post('/auth/login', credential);
@@ -55,3 +55,6 @@ export const updateTopping = (topping: FormData, id: string) =>
 export const getOrders = (queryString: string) => orderApi.get(`/orders?${queryString}`);
 export const getSingleOrder = (orderId: string, queryString: string) =>
     orderApi.get(`/orders/${orderId}?${queryString}`);
+
+export const changeStatus = (orderId: string, data: { status: OrderStatus }) =>
+    orderApi.patch(`/orders/change-status/${orderId}`, data);

@@ -1,17 +1,25 @@
-import { Avatar, Breadcrumb, Card, Col, Flex, List, Row, Space, Tag, Typography } from 'antd';
+import { Avatar, Breadcrumb, Card, Col, Flex, List, Row, Select, Space, Tag, Typography } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { RightOutlined } from '@ant-design/icons';
 import { colourMapping } from '../../constants';
 import { capitalizeFirst } from '../products/helper';
-import { useQuery } from '@tanstack/react-query';
-import { getSingleOrder } from '../../http/api';
-import { CartItem, Order } from '../../types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { changeStatus, getSingleOrder } from '../../http/api';
+import { CartItem, Order, OrderStatus } from '../../types';
+
+const orderStausOptons = [
+    { value: 'recieved', label: 'Recieved' },
+    { value: 'confirmed', label: 'Confirmed' },
+    { value: 'prepared', label: 'Prepared' },
+    { value: 'out_for_delivery', label: 'Out For Delivery' },
+    { value: 'delivered', label: 'Delivered' },
+];
 
 const SingleOrder = () => {
     const params = useParams();
     const orderId = params.orderId;
     const { data: order } = useQuery<Order>({
-        queryKey: ['order'],
+        queryKey: ['order', orderId],
         queryFn: async () => {
             const queryString = new URLSearchParams({
                 fields: 'cart,address,paymentMode,tenantId,totalAmount,comment,orderStatus,createdAt',
@@ -20,10 +28,26 @@ const SingleOrder = () => {
         },
     });
 
+    const queryClient = useQueryClient();
+    const { mutate } = useMutation({
+        mutationKey: ['order', orderId],
+        mutationFn: async (data: { status: OrderStatus }) => {
+            return changeStatus(orderId as string, data).then((res) => res.data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+        },
+    });
+
     if (!order) {
         return <div>Loading...</div>;
     }
     console.log(order);
+
+    const handleOrdeStatusChange = (status: OrderStatus) => {
+        console.log('changeto', status);
+        mutate({ status });
+    };
     return (
         <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
             <Flex justify="space-between" align="center">
@@ -35,6 +59,15 @@ const SingleOrder = () => {
                         { title: `Order ${order?._id}` },
                     ]}
                 />
+                <Space>
+                    <Typography.Text>Change Order Staus</Typography.Text>
+                    <Select
+                        defaultValue={order.orderStatus}
+                        style={{ width: 150 }}
+                        onChange={handleOrdeStatusChange}
+                        options={orderStausOptons}
+                    />
+                </Space>
             </Flex>
             <Row gutter={24}>
                 <Col span={14}>
