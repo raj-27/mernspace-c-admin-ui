@@ -14,7 +14,7 @@ const SingleOrder = () => {
         queryKey: ['order'],
         queryFn: async () => {
             const queryString = new URLSearchParams({
-                fields: 'cart,address,paymentMode,tenantId,total,comment,orderStatus',
+                fields: 'cart,address,paymentMode,tenantId,totalAmount,comment,orderStatus,createdAt',
             }).toString();
             return getSingleOrder(orderId as string, queryString).then((res) => res.data);
         },
@@ -68,7 +68,42 @@ const SingleOrder = () => {
                     </Card>
                 </Col>
                 <Col span={10}>
-                    <Card title="Customer Details">Some content</Card>
+                    <Card title="Customer Details">
+                        <Space direction="vertical">
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Name</Typography.Text>
+                                <Typography.Text>
+                                    {order?.customerId?.firstName + ' ' + order?.customerId?.lastName}
+                                </Typography.Text>
+                            </Flex>
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Addres</Typography.Text>
+                                <Typography.Text>{order.address}</Typography.Text>
+                            </Flex>
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Payment Method</Typography.Text>
+                                <Typography.Text>{order.paymentMode.toLocaleUpperCase()}</Typography.Text>
+                            </Flex>
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Payment Status</Typography.Text>
+                                <Typography.Text>{capitalizeFirst(order.orderStatus)}</Typography.Text>
+                            </Flex>
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Order Amount</Typography.Text>
+                                <Typography.Text>💵{order.totalAmount}</Typography.Text>
+                            </Flex>
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Order Time</Typography.Text>
+                                <Typography.Text>{order.createdAt}</Typography.Text>
+                            </Flex>
+                            {order.comment && (
+                                <Flex style={{ flexDirection: 'column' }}>
+                                    <Typography.Text type="secondary">Order Comment</Typography.Text>
+                                    <Typography.Text>{order.comment}</Typography.Text>
+                                </Flex>
+                            )}
+                        </Space>
+                    </Card>
                 </Col>
             </Row>
         </Space>
