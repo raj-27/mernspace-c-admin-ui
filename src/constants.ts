@@ -5,3 +5,11 @@ export const ROLES = {
     MANAGER: 'manager',
     CUSTOMER: 'customer',
 };
+
+export const colourMapping = {
+    recieved: 'processing',
+    confirmed: 'orange',
+    prepared: 'volcano',
+    out_for_delivery: 'purple',
+    delivered: 'green',
+};

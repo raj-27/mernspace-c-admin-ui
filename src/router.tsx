@@ -7,6 +7,8 @@ import Root from './Layouts/Root';
 import Users from './pages/users/Users';
 import Restaurants from './pages/restaurants/Restaurants';
 import Products from './pages/products/Products';
+import Toppings from './pages/toppings/Toppings';
+import Orders from './pages/orders/Orders';
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +34,14 @@ export const router = createBrowserRouter([
                     {
                         path: '/products',
                         element: <Products />,
+                    },
+                    {
+                        path: '/orders',
+                        element: <Orders />,
+                    },
+                    {
+                        path: '/toppings',
+                        element: <Toppings />,
                     },
                 ],
             },

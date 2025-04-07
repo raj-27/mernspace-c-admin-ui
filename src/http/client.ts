@@ -21,12 +21,17 @@ export const catalogApi = axios.create({
     },
 });
 
+export const orderApi = axios.create({
+    baseURL: import.meta.env.VITE_ORDER_API_URL,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    },
+});
+
 const refreshToken = async () => {
-    await axios.post(
-        `${import.meta.env.VITE_BACKEN_API_URL}/auth/refresh`,
-        {},
-        { withCredentials: true }
-    );
+    await axios.post(`${import.meta.env.VITE_BACKEN_API_URL}/auth/refresh`, {}, { withCredentials: true });
 };
 api.interceptors.response.use(
     (response) => response,

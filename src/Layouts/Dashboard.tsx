@@ -1,17 +1,7 @@
 import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Icon, { BellOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../store';
-import {
-    Avatar,
-    Badge,
-    Dropdown,
-    Flex,
-    Layout,
-    Menu,
-    Space,
-    Tag,
-    theme,
-} from 'antd';
+import { Avatar, Badge, Dropdown, Flex, Layout, Menu, Space, Tag, theme } from 'antd';
 import { useState } from 'react';
 import Logo from '../components/icon/Logo';
 import UserIcon from '../components/icon/UserIcon';
@@ -21,6 +11,7 @@ import GiftIcon from '../components/icon/GiftIcon';
 import BasketIcon from '../components/icon/BasketIcon';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '../http/api';
+import ToppingIcon from '../components/icon/ToppingIcon';
 const { Sider, Content, Header, Footer } = Layout;
 
 function getItems(role: string) {
@@ -34,6 +25,16 @@ function getItems(role: string) {
             key: '/products',
             icon: <Icon component={BasketIcon} />,
             label: <NavLink to="/products">Products</NavLink>,
+        },
+        {
+            key: '/orders',
+            icon: <Icon component={foodIcon} />,
+            label: <NavLink to="/orders">Orders</NavLink>,
+        },
+        {
+            key: '/toppings',
+            icon: <Icon component={ToppingIcon} />,
+            label: <NavLink to="/toppings">Toppings</NavLink>,
         },
         {
             key: '/promos',
@@ -77,31 +78,17 @@ const Dashboard = () => {
     } = theme.useToken();
 
     if (user === null) {
-        return (
-            <Navigate
-                to={`/auth/login?returnTo=${location.pathname}`}
-                replace={true}
-            />
-        );
+        return <Navigate to={`/auth/login?returnTo=${location.pathname}`} replace={true} />;
     }
     const items = getItems(user?.role);
     return (
         <div>
             <Layout style={{ minHeight: '100vh' }}>
-                <Sider
-                    collapsible
-                    collapsed={collapsed}
-                    theme="light"
-                    onCollapse={(value) => setCollapsed(value)}>
+                <Sider collapsible collapsed={collapsed} theme="light" onCollapse={(value) => setCollapsed(value)}>
                     <div className="demo-logo-vertical">
                         <Logo />
                     </div>
-                    <Menu
-                        theme="light"
-                        defaultSelectedKeys={[location.pathname]}
-                        mode="inline"
-                        items={items}
-                    />
+                    <Menu theme="light" defaultSelectedKeys={[location.pathname]} mode="inline" items={items} />
                 </Sider>
                 <Layout>
                     <Header
@@ -109,10 +96,7 @@ const Dashboard = () => {
                             padding: '0 16px',
                             background: colorBgContainer,
                         }}>
-                        <Flex
-                            gap="middle"
-                            align="center"
-                            justify="space-between">
+                        <Flex gap="middle" align="center" justify="space-between">
                             <Tag bordered={false} color="orange">
                                 {user?.tenant?.name ?? 'You are admin'}
                             </Tag>

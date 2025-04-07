@@ -1,33 +1,11 @@
-import {
-    Breadcrumb,
-    Button,
-    Flex,
-    Form,
-    Space,
-    Table,
-    Tag,
-    Typography,
-    Image,
-    Spin,
-    Drawer,
-    theme,
-} from 'antd';
-import {
-    LoadingOutlined,
-    PlusOutlined,
-    RightOutlined,
-} from '@ant-design/icons';
+import { Breadcrumb, Button, Flex, Form, Space, Table, Tag, Typography, Image, Spin, Drawer, theme } from 'antd';
+import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import ProductFilter from './ProductFilter';
 import { Product } from '../../types';
 import { useEffect, useMemo, useState } from 'react';
 import { PER_PAGE } from '../../constants';
-import {
-    keepPreviousData,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createProduct, getProducts, updateProduct } from '../../http/api';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { debounce } from 'lodash';
@@ -69,11 +47,7 @@ const columns = [
         dataIndex: 'isPublish',
         key: 'isPublish',
         render: (_: string, record: Product) => {
-            return (
-                <Tag color={`${record.isPublish ? 'green' : 'red'}`}>
-                    {record?.isPublish ? 'Publish' : 'Draft'}
-                </Tag>
-            );
+            return <Tag color={`${record.isPublish ? 'green' : 'red'}`}>{record?.isPublish ? 'Publish' : 'Draft'}</Tag>;
         },
     },
     {
@@ -101,28 +75,26 @@ const Products = () => {
     useEffect(() => {
         if (selectedProduct) {
             setDrawerOpen(true);
-            const priceConfiguration = Object.entries(
-                selectedProduct.priceConfiguration
-            ).reduce((acc, [key, value]) => {
-                const stringifiedKey = JSON.stringify({
-                    configurationKey: key,
-                    priceType: value.priceType,
-                });
-                return {
-                    ...acc,
-                    [stringifiedKey]: value.availableOptions,
-                };
-            }, {});
-
-            const attributes = selectedProduct.attributes.reduce(
-                (acc, item) => {
+            const priceConfiguration = Object.entries(selectedProduct.priceConfiguration).reduce(
+                (acc, [key, value]) => {
+                    const stringifiedKey = JSON.stringify({
+                        configurationKey: key,
+                        priceType: value.priceType,
+                    });
                     return {
                         ...acc,
-                        [item.name]: item.value,
+                        [stringifiedKey]: value.availableOptions,
                     };
                 },
                 {}
             );
+
+            const attributes = selectedProduct.attributes.reduce((acc, item) => {
+                return {
+                    ...acc,
+                    [item.name]: item.value,
+                };
+            }, {});
 
             form.setFieldsValue({
                 ...selectedProduct,
@@ -146,12 +118,8 @@ const Products = () => {
     } = useQuery({
         queryKey: ['products', queryParams],
         queryFn: async () => {
-            const filterParams = Object.fromEntries(
-                Object.entries(queryParams).filter((item) => !!item[1])
-            );
-            const queryString = new URLSearchParams(
-                filterParams as unknown as Record<string, string>
-            ).toString();
+            const filterParams = Object.fromEntries(Object.entries(queryParams).filter((item) => !!item[1]));
+            const queryString = new URLSearchParams(filterParams as unknown as Record<string, string>).toString();
             return getProducts(queryString).then((res) => res.data);
         },
         placeholderData: keepPreviousData,
@@ -184,9 +152,7 @@ const Products = () => {
         mutationFn: async (data: FormData) => {
             if (selectedProduct) {
                 // edit mode
-                return updateProduct(data, selectedProduct._id).then(
-                    (res) => res.data
-                );
+                return updateProduct(data, selectedProduct._id).then((res) => res.data);
             } else {
                 // create mode
                 return createProduct(data).then((res) => res.data);
@@ -221,19 +187,16 @@ const Products = () => {
         await form.validateFields();
 
         const priceConfiguration = form.getFieldValue('priceConfiguration');
-        const pricing = Object.entries(priceConfiguration).reduce(
-            (acc, [key, value]) => {
-                const parsedKey = JSON.parse(key);
-                return {
-                    ...acc,
-                    [parsedKey.configurationKey]: {
-                        priceType: parsedKey.priceType,
-                        availableOptions: value,
-                    },
-                };
-            },
-            {}
-        );
+        const pricing = Object.entries(priceConfiguration).reduce((acc, [key, value]) => {
+            const parsedKey = JSON.parse(key);
+            return {
+                ...acc,
+                [parsedKey.configurationKey]: {
+                    priceType: parsedKey.priceType,
+                    availableOptions: value,
+                },
+            };
+        }, {});
 
         const categoryId = form.getFieldValue('categoryId');
         // const currentAttrs = {
@@ -246,21 +209,16 @@ const Products = () => {
         //     { name: 'Spiciness', value: 'Hot' },
         // ];
 
-        const attributes = Object.entries(form.getFieldValue('attributes')).map(
-            ([key, value]) => {
-                return {
-                    name: key,
-                    value: value,
-                };
-            }
-        );
+        const attributes = Object.entries(form.getFieldValue('attributes')).map(([key, value]) => {
+            return {
+                name: key,
+                value: value,
+            };
+        });
 
         const postData = {
             ...form.getFieldsValue(),
-            tenantId:
-                user!.role === 'manager'
-                    ? user?.tenant?.id
-                    : form.getFieldValue('tenantId'),
+            tenantId: user!.role === 'manager' ? user?.tenant?.id : form.getFieldValue('tenantId'),
             isPublish: form.getFieldValue('isPublish') ? true : false,
             image: form.getFieldValue('image'),
             categoryId,
@@ -274,21 +232,13 @@ const Products = () => {
 
     return (
         <>
-            <Space
-                direction="vertical"
-                size={'large'}
-                style={{ width: '100%' }}>
+            <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
                 <Flex justify="space-between" align="center">
                     <Breadcrumb
                         separator={<RightOutlined />}
-                        items={[
-                            { title: <Link to={'/'}>Dashboard</Link> },
-                            { title: 'Products' },
-                        ]}
+                        items={[{ title: <Link to={'/'}>Dashboard</Link> }, { title: 'Products' }]}
                     />
-                    {isFetching && (
-                        <Spin indicator={<LoadingOutlined spin />} />
-                    )}
+                    {isFetching && <Spin indicator={<LoadingOutlined spin />} />}
                     {isError && (
                         <Typography.Text type="danger" code>
                             {error.message}
@@ -297,10 +247,7 @@ const Products = () => {
                 </Flex>
                 <Form form={filterForm} onFieldsChange={onFilterChange}>
                     <ProductFilter>
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => setDrawerOpen(true)}>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>
                             Add Product
                         </Button>
                     </ProductFilter>
@@ -316,9 +263,9 @@ const Products = () => {
                                 return (
                                     <Button
                                         type="link"
-                                        onClick={() =>
-                                            setCurrentProduct(record)
-                                        }>
+                                        onClick={() => {
+                                            setCurrentProduct(record);
+                                        }}>
                                         Edit
                                     </Button>
                                 );
@@ -365,10 +312,7 @@ const Products = () => {
                                 }}>
                                 Cancel
                             </Button>
-                            <Button
-                                type="primary"
-                                onClick={onHandleSubmit}
-                                loading={isPending}>
+                            <Button type="primary" onClick={onHandleSubmit} loading={isPending}>
                                 Submit
                             </Button>
                         </Space>
