@@ -1,14 +1,15 @@
 import { Breadcrumb, Flex, Space, Table, Tag, Typography } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { Order } from '../../types';
-import { useQuery } from '@tanstack/react-query';
+import { Order, OrderEvents, PaymentMode, PaymentStatus } from '../../types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getOrders } from '../../http/api';
 import { colourMapping, ROLES } from '../../constants';
 import { capitalizeFirst } from '../products/helper';
 import React from 'react';
 import socket from '../../lib/socket';
 import { useAuthStore } from '../../store';
+import { message } from 'antd';
 
 const columns = [
     {
@@ -90,10 +91,27 @@ const columns = [
 const TENANT_ID = 3;
 const Orders = () => {
     const { user } = useAuthStore();
+    const queryClient = useQueryClient();
+    const [messageApi, contextHolder] = message.useMessage();
+
     React.useEffect(() => {
         if (user?.tenant && user.role === ROLES.MANAGER) {
             socket.on('order-update', (data) => {
                 console.log('data-recieved: ', data);
+                // Todo: data.eventtype =
+                const { data: newOrder, event_type } = data;
+                if (
+                    (event_type === OrderEvents.ORDER_CREATED && newOrder.paymentMode === PaymentMode.CASH) ||
+                    (event_type === OrderEvents.PAYMENT_STATUS_UPDATE &&
+                        newOrder.paymentStatus === PaymentStatus.PAID &&
+                        newOrder.paymentMode === PaymentMode.CARD)
+                ) {
+                    messageApi.success({
+                        type: 'success',
+                        content: 'New order recieved',
+                    });
+                    queryClient.setQueryData(['orders'], (old: Order[]) => [newOrder, ...old]);
+                }
             });
             socket.on('join', (data) => {
                 console.log('user joined in:', data.roomId);
@@ -118,15 +136,18 @@ const Orders = () => {
     });
 
     return (
-        <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
-            <Flex justify="space-between" align="center">
-                <Breadcrumb
-                    separator={<RightOutlined />}
-                    items={[{ title: <Link to={'/'}>Dashboard</Link> }, { title: 'Orders' }]}
-                />
-            </Flex>
-            <Table columns={[...columns]} rowKey={'_id'} dataSource={orders?.data} />
-        </Space>
+        <>
+            {contextHolder}
+            <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
+                <Flex justify="space-between" align="center">
+                    <Breadcrumb
+                        separator={<RightOutlined />}
+                        items={[{ title: <Link to={'/'}>Dashboard</Link> }, { title: 'Orders' }]}
+                    />
+                </Flex>
+                <Table columns={[...columns]} rowKey={'_id'} dataSource={orders?.data} />
+            </Space>
+        </>
     );
 };
 

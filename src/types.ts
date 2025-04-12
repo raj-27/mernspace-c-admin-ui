@@ -149,3 +149,9 @@ export interface Order {
     paymentId?: string | number;
     createdAt: string;
 }
+
+export enum OrderEvents {
+    ORDER_CREATED = 'ORDER_CREATED',
+    PAYMENT_STATUS_UPDATE = 'PAYMENT_STATUS_UPDATE',
+    ORDER_STATUS_UPDATE = 'ORDER_STATUS_UPDATE',
+}
