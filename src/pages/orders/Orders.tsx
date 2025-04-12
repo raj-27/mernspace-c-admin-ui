@@ -4,8 +4,11 @@ import { Link } from 'react-router-dom';
 import { Order } from '../../types';
 import { useQuery } from '@tanstack/react-query';
 import { getOrders } from '../../http/api';
-import { colourMapping } from '../../constants';
+import { colourMapping, ROLES } from '../../constants';
 import { capitalizeFirst } from '../products/helper';
+import React from 'react';
+import socket from '../../lib/socket';
+import { useAuthStore } from '../../store';
 
 const columns = [
     {
@@ -86,6 +89,23 @@ const columns = [
 // Todo : make this dynamic
 const TENANT_ID = 3;
 const Orders = () => {
+    const { user } = useAuthStore();
+    React.useEffect(() => {
+        if (user?.tenant && user.role === ROLES.MANAGER) {
+            socket.on('order-update', (data) => {});
+            socket.on('join', (data) => {
+                console.log('user joined in:', data.roomId);
+            });
+            socket.emit('join', {
+                tenantId: user.tenant.id,
+            });
+        }
+        return () => {
+            socket.off('join');
+            socket.off('order-update');
+            // socket.close();
+        };
+    }, []);
     const { data: orders } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => {
@@ -94,8 +114,6 @@ const Orders = () => {
             return getOrders('').then((res) => res.data);
         },
     });
-
-    console.log(orders?.data);
 
     return (
         <Space direction="vertical" size={'large'} style={{ width: '100%' }}>
