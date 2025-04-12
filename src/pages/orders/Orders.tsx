@@ -92,7 +92,9 @@ const Orders = () => {
     const { user } = useAuthStore();
     React.useEffect(() => {
         if (user?.tenant && user.role === ROLES.MANAGER) {
-            socket.on('order-update', (data) => {});
+            socket.on('order-update', (data) => {
+                console.log('data-recieved: ', data);
+            });
             socket.on('join', (data) => {
                 console.log('user joined in:', data.roomId);
             });
