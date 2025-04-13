@@ -1,14 +1,4 @@
-import {
-    Alert,
-    Button,
-    Card,
-    Checkbox,
-    Flex,
-    Form,
-    Input,
-    Layout,
-    Space,
-} from 'antd';
+import { Alert, Button, Card, Checkbox, Flex, Form, Input, Layout, Space } from 'antd';
 import { LockFilled, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Credentials } from '../../types';
@@ -99,13 +89,7 @@ const LoginPage = () => {
                                     password: value.password,
                                 })
                             }>
-                            {isError && (
-                                <Alert
-                                    style={{ margin: '1rem 0 ' }}
-                                    type="error"
-                                    message={`Error`}
-                                />
-                            )}
+                            {isError && <Alert style={{ margin: '1rem 0 ' }} type="error" message={`Error`} />}
                             <Form.Item
                                 name={'username'}
                                 rules={[
@@ -118,10 +102,7 @@ const LoginPage = () => {
                                         message: 'Email is not valid',
                                     },
                                 ]}>
-                                <Input
-                                    prefix={<UserOutlined />}
-                                    placeholder="Username"
-                                />
+                                <Input prefix={<UserOutlined />} placeholder="Username" />
                             </Form.Item>
                             <Form.Item
                                 name={'password'}
@@ -131,16 +112,11 @@ const LoginPage = () => {
                                         message: 'Please input your password',
                                     },
                                 ]}>
-                                <Input.Password
-                                    prefix={<LockOutlined />}
-                                    placeholder="Password"
-                                />
+                                <Input.Password prefix={<LockOutlined />} placeholder="Password" />
                             </Form.Item>
                             <Flex justify="space-between">
                                 <Form.Item name={'remember'}>
-                                    <Checkbox checked={true}>
-                                        Remember me
-                                    </Checkbox>
+                                    <Checkbox checked={true}>Remember me</Checkbox>
                                 </Form.Item>
                                 <a href="#" id="login-form-id">
                                     Forget password
