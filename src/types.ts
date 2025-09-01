@@ -155,9 +155,3 @@ export enum OrderEvents {
     PAYMENT_STATUS_UPDATE = 'PAYMENT_STATUS_UPDATE',
     ORDER_STATUS_UPDATE = 'ORDER_STATUS_UPDATE',
 }
-
-export enum GateApiUrl {
-    AUTH_SERVICE = '/api/auth',
-    CATALOG_SERVICE = '/api/catalog',
-    ORDER_SERVICE = '/api/orders',
-}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '../store';
-import { GateApiUrl } from '../types';
+import { AUTH_SERVICE } from './api';
 
 // Need to setup api gateway
 
@@ -15,7 +15,7 @@ export const api = axios.create({
 
 const refreshToken = async () => {
     await axios.post(
-        `${import.meta.env.VITE_BACKEN_API_URL}${GateApiUrl.AUTH_SERVICE}/auth/refresh`,
+        `${import.meta.env.VITE_BACKEN_API_URL}${AUTH_SERVICE}/auth/refresh`,
         {},
         { withCredentials: true }
     );

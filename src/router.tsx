@@ -11,55 +11,66 @@ import Toppings from './pages/toppings/Toppings';
 import Orders from './pages/orders/Orders';
 import SingleOrder from './pages/orders/SingleOrder';
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+    [
+        {
+            path: '/',
+            element: <Root />,
+            children: [
+                {
+                    path: '/',
+                    element: <Dashboard />,
+                    children: [
+                        {
+                            path: '/',
+                            element: <HomePage />,
+                        },
+                        {
+                            path: '/users',
+                            element: <Users />,
+                        },
+                        {
+                            path: '/restaurants',
+                            element: <Restaurants />,
+                        },
+                        {
+                            path: '/products',
+                            element: <Products />,
+                        },
+                        {
+                            path: '/orders',
+                            element: <Orders />,
+                        },
+                        {
+                            path: '/orders/:orderId',
+                            element: <SingleOrder />,
+                        },
+                        {
+                            path: '/toppings',
+                            element: <Toppings />,
+                        },
+                    ],
+                },
+                {
+                    path: '/auth',
+                    element: <UnAuth />,
+                    children: [
+                        {
+                            path: 'login',
+                            element: <LoginPage />,
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
     {
-        path: '/',
-        element: <Root />,
-        children: [
-            {
-                path: '/',
-                element: <Dashboard />,
-                children: [
-                    {
-                        path: '/',
-                        element: <HomePage />,
-                    },
-                    {
-                        path: '/users',
-                        element: <Users />,
-                    },
-                    {
-                        path: '/restaurants',
-                        element: <Restaurants />,
-                    },
-                    {
-                        path: '/products',
-                        element: <Products />,
-                    },
-                    {
-                        path: '/orders',
-                        element: <Orders />,
-                    },
-                    {
-                        path: '/orders/:orderId',
-                        element: <SingleOrder />,
-                    },
-                    {
-                        path: '/toppings',
-                        element: <Toppings />,
-                    },
-                ],
-            },
-            {
-                path: '/auth',
-                element: <UnAuth />,
-                children: [
-                    {
-                        path: 'login',
-                        element: <LoginPage />,
-                    },
-                ],
-            },
-        ],
-    },
-]);
+        future: {
+            v7_normalizeFormMethod: true,
+            v7_skipActionErrorRevalidation: true,
+            v7_partialHydration: true,
+            v7_fetcherPersist: true,
+            v7_relativeSplatPath: true,
+        },
+    }
+);
